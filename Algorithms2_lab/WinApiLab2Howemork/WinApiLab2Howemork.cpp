@@ -97,6 +97,16 @@ void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDeltaX, UINT sizeDeltaY) {
 	DeleteObject(hBrush);
 }
 
+void DrawSkyBox(HDC& hdc, int maximumYCoordinate) {
+    // Draw skybox using blue rectangle
+    
+    HBRUSH hBrush = CreateSolidBrush(RGB(173, 216, 230));
+    SelectObject(hdc, hBrush);
+
+    Rectangle(hdc, 0, 0, 100000, maximumYCoordinate);
+    
+}
+
 void newDrawHouse(HDC& hdc, const POINT topLeft, UINT wallLength) {
     // Draw house using Rectangle and self-made triagnle(using 3 lines)
     // Warning: Roof MUST be above grass upper line, because i cannot fill triagnle with custom color
@@ -130,8 +140,8 @@ void DrawSun(HDC& hdc, int size) {
 	SelectObject(hdc, hBrush);
 
 	Ellipse(hdc,
-		100 - size, 100 - size,
-		100 + size, 100 + size
+		75 - size, 50- size,
+		75+ size, 50 + size
 	);
 
 	DeleteObject(hBrush);
@@ -331,6 +341,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             newDrawHouse(hdc, CreatePoint(500, 300), 100);
             newDrawHouse(hdc, CreatePoint(900, 300), 100);
 
+            DrawSkyBox(hdc, 150);
             DrawSun(hdc, 50);
        
             EndPaint(hWnd, &ps);
