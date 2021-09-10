@@ -23,19 +23,27 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 *************************************
 ************************************/
 
+POINT CreatePoint(int x, int y) {
+	POINT p = POINT();
+	p.x = x;
+	p.y = y;
 
-void DrawFlower(HDC& hdc, POINT root)
+	return p;
+}
+
+
+void DrawFlower(HDC& hdc, POINT root, UINT stemSize)
 {
 
 	MoveToEx(hdc, root.x, root.y, NULL);
-	LineTo(hdc, root.x, root.y + 20);
+	LineTo(hdc, root.x, root.y + stemSize);
 	
     // Create custom brush in order to draw a "Colored" head of the flower
     HBRUSH hBrush = CreateSolidBrush(RGB(128, 128, 0));
 	SelectObject(hdc, hBrush);
 
     // Represent flower head as ellipse
-	Ellipse(hdc, root.x - 5, root.y - 4, root.x + 5, root.y + 4);
+	Ellipse(hdc, root.x - 4, root.y - 4, root.x + 4, root.y + 4);
 
     DeleteObject(hBrush);
 
@@ -55,7 +63,7 @@ void DrawFloor(HDC& hdc, POINT topLeft, POINT bottomRight)
 }
 
 void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDelta) {
-    // Draw lake using ellipse
+    // Draw lake using Circle(i.e x-radius equal to y-radius)
 
     // Create brush with blue water-like color
     HBRUSH hBrush = CreateSolidBrush(RGB(0, 141, 151));
@@ -72,7 +80,7 @@ void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDelta) {
 }
 
 void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDeltaX, UINT sizeDeltaY) {
-	// Draw lake using ellipse
+	// Draw lake using ellipse(i.e x-radius equal is not to y-radius)
 
     // Create brush with blue water-like color
 	HBRUSH hBrush = CreateSolidBrush(RGB(0, 141, 151));
@@ -86,13 +94,58 @@ void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDeltaX, UINT sizeDeltaY) {
 	DeleteObject(hBrush);
 }
 
-POINT& CreatePoint(int x, int y) {
-    POINT p = POINT();
-    p.x = x;
-    p.y = y;
-    
-    return p;
+void oldDrawHouse(HDC& hdc, const POINT topLeft, FLOAT sizeModifier)
+{
+
+	MoveToEx(hdc, (topLeft.x + 100) * sizeModifier, (topLeft.y - 200)* sizeModifier, NULL);
+
+	LineTo(hdc, (topLeft.x - 20)*sizeModifier, (topLeft.y)*sizeModifier);
+	
+    //MoveToEx(hdc, 450, 100, NULL);
+	MoveToEx(hdc, sizeModifier * (topLeft.x + 150), sizeModifier* (topLeft.y - 200), NULL);
+
+    LineTo(hdc, sizeModifier* ( topLeft.x + 320),  sizeModifier * topLeft.y);
+
+	LineTo(hdc, sizeModifier*(topLeft.x - 20),  sizeModifier* topLeft.y);
+
+
+	// Main body of the house
+    Rectangle(hdc, topLeft.x, topLeft.y, topLeft.x + 300, topLeft.y + 300);
+
+	// Door
+	Rectangle(hdc, topLeft.x + 200, topLeft.y + 150, topLeft.x + 280, topLeft.y + 300);
+
+	// Window
+	Rectangle(hdc, topLeft.x + 50, topLeft.y + 60, topLeft.x + 180, topLeft.y + 220);
+
+	// Lines that splits the window
+	MoveToEx(hdc, topLeft.x + 115, topLeft.y + 60, NULL);
+	LineTo(hdc, topLeft.x + 115, topLeft.y + 160);
+
+	MoveToEx(hdc, topLeft.x + 115, topLeft.y + 140, NULL);
+	LineTo(hdc, topLeft.x + 180, topLeft.y + 140);
 }
+
+void newDrawHouse(HDC& hdc, const POINT topLeft, UINT wallLength) {
+
+
+    // Main body of the house that will be a rectangle
+    Rectangle(hdc, topLeft.x, topLeft.y, topLeft.x + wallLength, topLeft.y + wallLength);
+
+
+
+    // Draw house roof
+    POINT triangleRoofHighestpoint = CreatePoint((int)(topLeft.x + wallLength / 2), (int)(topLeft.y - wallLength / 3));
+   
+    MoveToEx(hdc, topLeft.x, topLeft.y, NULL);
+    LineTo(hdc, triangleRoofHighestpoint.x, triangleRoofHighestpoint.y);
+    LineTo(hdc, topLeft.x + wallLength, topLeft.y);
+    LineTo(hdc, topLeft.x, topLeft.y);
+
+
+
+}
+
 
 /************************************
 **********DRAWING UTILS END**********
@@ -242,16 +295,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             POINT grassTopLeft = CreatePoint(100, 100);
             POINT grassBottomRight = CreatePoint(600, 600);
             
+
+            // Flower Properties
+            UINT defaultFlowerStemSize = 20;
+            
             // Defines lake properties
             POINT lakeRoot = CreatePoint(450, 450);
             UINT lakeSizeDelta = 100;
 
 
             POINT point = CreatePoint(200, 200);
+            POINT point2 = CreatePoint(250, 200);
 
             DrawFloor(hdc, grassTopLeft, grassBottomRight);
-            DrawFlower(hdc, point);
+            DrawFlower(hdc, point, defaultFlowerStemSize);
+            DrawFlower(hdc, point2, defaultFlowerStemSize + 50);
             DrawLake(hdc, lakeRoot, lakeSizeDelta - 10, lakeSizeDelta+ 10);
+            
+            newDrawHouse(hdc, CreatePoint(500, 500), 100);
            
 
 
