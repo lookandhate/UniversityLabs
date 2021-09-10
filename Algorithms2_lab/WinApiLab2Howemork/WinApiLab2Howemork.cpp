@@ -22,6 +22,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 // DRAWING UTILS
 void DrawFlower(HDC& hdc, POINT root)
 {
+
 	MoveToEx(hdc, root.x, root.y, NULL);
 	LineTo(hdc, root.x, root.y + 20);
 	
@@ -29,7 +30,7 @@ void DrawFlower(HDC& hdc, POINT root)
     HBRUSH hBrush = CreateSolidBrush(RGB(128, 128, 0));
 	SelectObject(hdc, hBrush);
 
-
+    // Represent flower head as ellipse
 	Ellipse(hdc, root.x - 5, root.y - 4, root.x + 5, root.y + 4);
 
 }
