@@ -145,7 +145,6 @@
     <ClInclude Include="WinApiLab2Howemork.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DrawingUtils.cpp" />
     <ClCompile Include="WinApiLab2Howemork.cpp" />
   </ItemGroup>
   <ItemGroup>

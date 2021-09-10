@@ -18,8 +18,12 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
+/************************************
+************DRAWING UTILS************
+*************************************
+************************************/
 
-// DRAWING UTILS
+
 void DrawFlower(HDC& hdc, POINT root)
 {
 
@@ -33,11 +37,67 @@ void DrawFlower(HDC& hdc, POINT root)
     // Represent flower head as ellipse
 	Ellipse(hdc, root.x - 5, root.y - 4, root.x + 5, root.y + 4);
 
+    DeleteObject(hBrush);
+
 }
 
+void DrawFloor(HDC& hdc, POINT topLeft, POINT bottomRight)
+{
+    // Brush with color of the grass
+    auto color = RGB(126, 200, 80);
+    HBRUSH hBrush = CreateSolidBrush(color);
+    
+    SelectObject(hdc, hBrush);
 
+    Rectangle(hdc, topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
 
+    DeleteObject(hBrush);
+}
 
+void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDelta) {
+    // Draw lake using ellipse
+
+    // Create brush with blue water-like color
+    HBRUSH hBrush = CreateSolidBrush(RGB(0, 141, 151));
+    SelectObject(hdc, hBrush);
+
+    Ellipse(hdc,
+        lakeRoot.x - sizeDelta, lakeRoot.y - sizeDelta,
+        lakeRoot.x + sizeDelta, lakeRoot.y + sizeDelta
+    );
+
+    DeleteObject(hBrush);
+    
+
+}
+
+void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDeltaX, UINT sizeDeltaY) {
+	// Draw lake using ellipse
+
+    // Create brush with blue water-like color
+	HBRUSH hBrush = CreateSolidBrush(RGB(0, 141, 151));
+	SelectObject(hdc, hBrush);
+
+	Ellipse(hdc,
+		lakeRoot.x - sizeDeltaX, lakeRoot.y - sizeDeltaY,
+		lakeRoot.x + sizeDeltaX, lakeRoot.y + sizeDeltaY
+	);
+
+	DeleteObject(hBrush);
+}
+
+POINT& CreatePoint(int x, int y) {
+    POINT p = POINT();
+    p.x = x;
+    p.y = y;
+    
+    return p;
+}
+
+/************************************
+**********DRAWING UTILS END**********
+*************************************
+************************************/
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -178,10 +238,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             *************************************/
 
 
-            POINT point = POINT();
-            point.x = 200;
-            point.y = 200;
+            // Defines grass properties
+            POINT grassTopLeft = CreatePoint(100, 100);
+            POINT grassBottomRight = CreatePoint(600, 600);
+            
+            // Defines lake properties
+            POINT lakeRoot = CreatePoint(450, 450);
+            UINT lakeSizeDelta = 100;
+
+
+            POINT point = CreatePoint(200, 200);
+
+            DrawFloor(hdc, grassTopLeft, grassBottomRight);
             DrawFlower(hdc, point);
+            DrawLake(hdc, lakeRoot, lakeSizeDelta - 10, lakeSizeDelta+ 10);
+           
 
 
 
