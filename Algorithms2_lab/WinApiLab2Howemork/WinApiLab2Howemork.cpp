@@ -43,7 +43,7 @@ void DrawFlower(HDC& hdc, POINT root, UINT stemSize)
 	SelectObject(hdc, hBrush);
 
     // Represent flower head as ellipse
-	Ellipse(hdc, root.x - 4, root.y - 4, root.x + 4, root.y + 4);
+	Ellipse(hdc, root.x - 16, root.y - 16, root.x + 16, root.y + 16);
 
     DeleteObject(hBrush);
 
@@ -130,9 +130,12 @@ void newDrawHouse(HDC& hdc, const POINT topLeft, UINT wallLength) {
 
 
     // Main body of the house that will be a rectangle
+
+    HBRUSH hMainBodyBrush = CreateSolidBrush(RGB(186, 140, 99));
+    SelectObject(hdc, hMainBodyBrush);
     Rectangle(hdc, topLeft.x, topLeft.y, topLeft.x + wallLength, topLeft.y + wallLength);
-
-
+    
+    DeleteObject(hMainBodyBrush);
 
     // Draw house roof
     POINT triangleRoofHighestpoint = CreatePoint((int)(topLeft.x + wallLength / 2), (int)(topLeft.y - wallLength / 3));
@@ -248,6 +251,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 
 
+void GenerateFlowers(unsigned int flowersToGenerate,unsigned int maxXCoordinate, unsigned int maxYCoordinate,
+    unsigned int minXCoordinate, unsigned int minYCoordinate,    
+    HDC hdc, UINT defaultFlowerStemSize
+)
+{
+    for (int i = 0; i < flowersToGenerate; i++) {
+        // coordinate = rand() % (max_number + 1 - minimum_number) + minimum_number
+        int xCoordinate = rand() % (maxXCoordinate - minXCoordinate) + minXCoordinate;
+        int yCoordinate = rand() % (maxYCoordinate - minYCoordinate ) + minYCoordinate;
+        int mutateSizeOfFlowerSteam = rand() % (60 + 1 - 5) + 5;
+        DrawFlower(hdc, CreatePoint(xCoordinate, yCoordinate), defaultFlowerStemSize + mutateSizeOfFlowerSteam);
+    }
+}
+
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -292,32 +309,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
             // Defines grass properties
-            POINT grassTopLeft = CreatePoint(100, 100);
-            POINT grassBottomRight = CreatePoint(600, 600);
+			RECT clientRect;
+			GetClientRect(hWnd, &clientRect);
+
+            POINT grassTopLeft = CreatePoint(clientRect.left, clientRect.top + 300);
+            POINT grassBottomRight = CreatePoint(clientRect.right, clientRect.bottom);
             
 
             // Flower Properties
-            UINT defaultFlowerStemSize = 20;
+            UINT defaultFlowerStemSize = 50;
             
             // Defines lake properties
-            POINT lakeRoot = CreatePoint(450, 450);
+            POINT lakeRoot = CreatePoint(800, 500);
             UINT lakeSizeDelta = 100;
-
-
-            POINT point = CreatePoint(200, 200);
-            POINT point2 = CreatePoint(250, 200);
-
+           
             DrawFloor(hdc, grassTopLeft, grassBottomRight);
-            DrawFlower(hdc, point, defaultFlowerStemSize);
-            DrawFlower(hdc, point2, defaultFlowerStemSize + 50);
+            
+            GenerateFlowers(10,
+                clientRect.right - 100, clientRect.bottom, clientRect.left + 100, clientRect.top + 300,
+                hdc, defaultFlowerStemSize
+            );
+
+            
             DrawLake(hdc, lakeRoot, lakeSizeDelta - 10, lakeSizeDelta+ 10);
             
-            newDrawHouse(hdc, CreatePoint(500, 500), 100);
-           
 
-
-
-            // TODO: Add any drawing code that uses hdc here...
+            // Placing houses
+            newDrawHouse(hdc, CreatePoint(500, 300), 100);
+            newDrawHouse(hdc, CreatePoint(900, 300), 100);
+       
             EndPaint(hWnd, &ps);
         }
         break;
