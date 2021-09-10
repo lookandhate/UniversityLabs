@@ -23,6 +23,9 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 *************************************
 ************************************/
 
+
+#define myrand(minNum,maxNum) rand() % (maxNum - minNum) + minNum
+
 POINT CreatePoint(int x, int y) {
 	POINT p = POINT();
 	p.x = x;
@@ -94,52 +97,24 @@ void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDeltaX, UINT sizeDeltaY) {
 	DeleteObject(hBrush);
 }
 
-void oldDrawHouse(HDC& hdc, const POINT topLeft, FLOAT sizeModifier)
-{
-
-	MoveToEx(hdc, (topLeft.x + 100) * sizeModifier, (topLeft.y - 200)* sizeModifier, NULL);
-
-	LineTo(hdc, (topLeft.x - 20)*sizeModifier, (topLeft.y)*sizeModifier);
-	
-    //MoveToEx(hdc, 450, 100, NULL);
-	MoveToEx(hdc, sizeModifier * (topLeft.x + 150), sizeModifier* (topLeft.y - 200), NULL);
-
-    LineTo(hdc, sizeModifier* ( topLeft.x + 320),  sizeModifier * topLeft.y);
-
-	LineTo(hdc, sizeModifier*(topLeft.x - 20),  sizeModifier* topLeft.y);
-
-
-	// Main body of the house
-    Rectangle(hdc, topLeft.x, topLeft.y, topLeft.x + 300, topLeft.y + 300);
-
-	// Door
-	Rectangle(hdc, topLeft.x + 200, topLeft.y + 150, topLeft.x + 280, topLeft.y + 300);
-
-	// Window
-	Rectangle(hdc, topLeft.x + 50, topLeft.y + 60, topLeft.x + 180, topLeft.y + 220);
-
-	// Lines that splits the window
-	MoveToEx(hdc, topLeft.x + 115, topLeft.y + 60, NULL);
-	LineTo(hdc, topLeft.x + 115, topLeft.y + 160);
-
-	MoveToEx(hdc, topLeft.x + 115, topLeft.y + 140, NULL);
-	LineTo(hdc, topLeft.x + 180, topLeft.y + 140);
-}
-
 void newDrawHouse(HDC& hdc, const POINT topLeft, UINT wallLength) {
-
+    // Draw house using Rectangle and self-made triagnle(using 3 lines)
+    // Warning: Roof MUST be above grass upper line, because i cannot fill triagnle with custom color
 
     // Main body of the house that will be a rectangle
 
+    // Create custom brush in order to fill rectangle with custom color(wood-like color in our case)
     HBRUSH hMainBodyBrush = CreateSolidBrush(RGB(186, 140, 99));
     SelectObject(hdc, hMainBodyBrush);
     Rectangle(hdc, topLeft.x, topLeft.y, topLeft.x + wallLength, topLeft.y + wallLength);
     
+    // Do not forget to delete brush object, because we do not want to get a memory leak
     DeleteObject(hMainBodyBrush);
 
-    // Draw house roof
+    // This point represent TOP of the triangle( point there two lines will collide with each other)
     POINT triangleRoofHighestpoint = CreatePoint((int)(topLeft.x + wallLength / 2), (int)(topLeft.y - wallLength / 3));
    
+    // Draw a triangle using point we calculated above
     MoveToEx(hdc, topLeft.x, topLeft.y, NULL);
     LineTo(hdc, triangleRoofHighestpoint.x, triangleRoofHighestpoint.y);
     LineTo(hdc, topLeft.x + wallLength, topLeft.y);
@@ -149,6 +124,37 @@ void newDrawHouse(HDC& hdc, const POINT topLeft, UINT wallLength) {
 
 }
 
+void DrawSun(HDC& hdc, int size) {
+    // Draw sun using circle( ellipse with equal radiuses
+	HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 0));
+	SelectObject(hdc, hBrush);
+
+	Ellipse(hdc,
+		100 - size, 100 - size,
+		100 + size, 100 + size
+	);
+
+	DeleteObject(hBrush);
+
+}
+
+void GenerateFlowers(unsigned int flowersToGenerate, unsigned int maxXCoordinate, unsigned int maxYCoordinate,
+	unsigned int minXCoordinate, unsigned int minYCoordinate,
+	HDC hdc, UINT defaultFlowerStemSize
+)
+{
+	for (int i = 0; i < flowersToGenerate; i++) {
+		// coordinate = rand() % (max_number + 1 - minimum_number) + minimum_number
+
+		int xCoordinate = myrand(minXCoordinate, maxXCoordinate);
+		int yCoordinate = myrand(minYCoordinate, maxYCoordinate);
+
+		// Delta on what flower steam can change
+		int mutateSizeOfFlowerSteam = myrand(5, 60);
+
+		DrawFlower(hdc, CreatePoint(xCoordinate, yCoordinate), defaultFlowerStemSize + mutateSizeOfFlowerSteam);
+	}
+}
 
 /************************************
 **********DRAWING UTILS END**********
@@ -249,22 +255,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-
-
-void GenerateFlowers(unsigned int flowersToGenerate,unsigned int maxXCoordinate, unsigned int maxYCoordinate,
-    unsigned int minXCoordinate, unsigned int minYCoordinate,    
-    HDC hdc, UINT defaultFlowerStemSize
-)
-{
-    for (int i = 0; i < flowersToGenerate; i++) {
-        // coordinate = rand() % (max_number + 1 - minimum_number) + minimum_number
-        int xCoordinate = rand() % (maxXCoordinate - minXCoordinate) + minXCoordinate;
-        int yCoordinate = rand() % (maxYCoordinate - minYCoordinate ) + minYCoordinate;
-        int mutateSizeOfFlowerSteam = rand() % (60 + 1 - 5) + 5;
-        DrawFlower(hdc, CreatePoint(xCoordinate, yCoordinate), defaultFlowerStemSize + mutateSizeOfFlowerSteam);
-    }
-}
-
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -325,18 +315,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
            
             DrawFloor(hdc, grassTopLeft, grassBottomRight);
             
+            // Adding flowers on the floor
             GenerateFlowers(10,
                 clientRect.right - 100, clientRect.bottom, clientRect.left + 100, clientRect.top + 300,
                 hdc, defaultFlowerStemSize
             );
 
-            
+            // Drawing a lake between two houses
             DrawLake(hdc, lakeRoot, lakeSizeDelta - 10, lakeSizeDelta+ 10);
+
+            // Draw lake in random location
             
 
             // Placing houses
             newDrawHouse(hdc, CreatePoint(500, 300), 100);
             newDrawHouse(hdc, CreatePoint(900, 300), 100);
+
+            DrawSun(hdc, 50);
        
             EndPaint(hWnd, &ps);
         }
