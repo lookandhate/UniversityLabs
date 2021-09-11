@@ -2,6 +2,7 @@
 //
 
 #include "framework.h"
+#include <time.h>
 #include "WinApiLab2Howemork.h"
 
 #define MAX_LOADSTRING 100
@@ -58,7 +59,7 @@ void DrawFlower(HDC& hdc, POINT root, UINT stemSize, COLORREF color)
 
 }
 
-void DrawFloor(HDC& hdc, POINT topLeft, POINT bottomRight)
+void DrawFloor(const HDC& hdc, POINT topLeft, POINT bottomRight)
 {
     // Brush with color of the grass
     auto color = RGB(126, 200, 80);
@@ -71,7 +72,7 @@ void DrawFloor(HDC& hdc, POINT topLeft, POINT bottomRight)
     DeleteObject(hBrush);
 }
 
-void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDelta) {
+void DrawLake(const HDC& hdc, POINT lakeRoot, UINT sizeDelta) {
     // Draw lake using Circle(i.e x-radius equal to y-radius)
 
     // Create brush with blue water-like color
@@ -88,7 +89,7 @@ void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDelta) {
 
 }
 
-void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDeltaX, UINT sizeDeltaY) {
+void DrawLake(const HDC& hdc, POINT lakeRoot, UINT sizeDeltaX, UINT sizeDeltaY) {
 	// Draw lake using ellipse(i.e x-radius equal is not to y-radius)
 
     // Create brush with blue water-like color
@@ -103,7 +104,7 @@ void DrawLake(HDC& hdc, POINT lakeRoot, UINT sizeDeltaX, UINT sizeDeltaY) {
 	DeleteObject(hBrush);
 }
 
-void DrawSkyBox(HDC& hdc, int maximumYCoordinate) {
+void DrawSkyBox(const HDC& hdc, int maximumYCoordinate) {
     // Draw skybox using blue rectangle
     
     HBRUSH hBrush = CreateSolidBrush(RGB(173, 216, 230));
@@ -113,9 +114,9 @@ void DrawSkyBox(HDC& hdc, int maximumYCoordinate) {
     
 }
 
-void newDrawHouse(HDC& hdc, const POINT topLeft, UINT wallLength) {
-    // Draw house using Rectangle and self-made triagnle(using 3 lines)
-    // Warning: Roof MUST be above grass upper line, because i cannot fill triagnle with custom color
+void newDrawHouse(const HDC& hdc, const POINT topLeft, UINT wallLength) {
+    // Draw house using Rectangle and self-made triangle(using 3 lines)
+    // Warning: Roof MUST be above grass upper line, because i cannot fill triangle with custom color
 
     // Main body of the house that will be a rectangle
 
@@ -140,7 +141,7 @@ void newDrawHouse(HDC& hdc, const POINT topLeft, UINT wallLength) {
 
 }
 
-void DrawSun(HDC& hdc, int size) {
+void DrawSun(const HDC& hdc, int size) {
     // Draw sun using circle( ellipse with equal radiuses
 	HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 0));
 	SelectObject(hdc, hBrush);
@@ -155,11 +156,11 @@ void DrawSun(HDC& hdc, int size) {
 }
 
 void GenerateFlowers(unsigned int flowersToGenerate, unsigned int maxXCoordinate, unsigned int maxYCoordinate,
-	unsigned int minXCoordinate, unsigned int minYCoordinate,
+	unsigned int minXCoordinate, unsigned int minYCoordinate, // Need borders because we do not want to spawn flowers in the air
 	HDC hdc, UINT defaultFlowerStemSize
 )
 {
-	for (int i = 0; i < flowersToGenerate; i++) {
+	for (unsigned int i = 0; i < flowersToGenerate; i++) {
 		// coordinate = rand() % (max_number + 1 - minimum_number) + minimum_number
 
 		int xCoordinate = myrand(minXCoordinate, maxXCoordinate);
@@ -171,11 +172,49 @@ void GenerateFlowers(unsigned int flowersToGenerate, unsigned int maxXCoordinate
         // Random color number(index in FlowerColors array)
         COLORREF flowerColor = FlowerColors[myrand(0, 3)];
         
-
 		DrawFlower(hdc, CreatePoint(xCoordinate, yCoordinate), defaultFlowerStemSize + mutateSizeOfFlowerSteam, flowerColor);
 	}
 }
 
+
+void MainDrawingFunction(const HDC& hdc, const HWND& hWnd) {
+	// Defines grass properties
+	RECT clientRect;
+	GetClientRect(hWnd, &clientRect);
+
+	POINT grassTopLeft = CreatePoint(clientRect.left, clientRect.top + 300);
+	POINT grassBottomRight = CreatePoint(clientRect.right, clientRect.bottom);
+
+
+	// Flower Properties
+	UINT defaultFlowerStemSize = 50;
+    UINT flowersToSpawn = myrand(10, 50);
+
+	// Defines lake properties
+	POINT lakeRoot = CreatePoint(800, 500);
+	UINT lakeSizeDelta = 100;
+
+	DrawFloor(hdc, grassTopLeft, grassBottomRight);
+
+	// Adding flowers on the floor
+	GenerateFlowers(flowersToSpawn,
+		clientRect.right - 10, clientRect.bottom, clientRect.left + 10, clientRect.top + 300,
+		hdc, defaultFlowerStemSize
+	);
+
+	// Drawing a lake between two houses
+	DrawLake(hdc, lakeRoot, lakeSizeDelta - 10, lakeSizeDelta + 10);
+
+	// Draw lake in random location
+
+
+	// Placing houses
+	newDrawHouse(hdc, CreatePoint(500, 300), 100);
+	newDrawHouse(hdc, CreatePoint(900, 300), 100);
+
+	DrawSkyBox(hdc, 150);
+	DrawSun(hdc, 50);
+}
 
 
 /************************************
@@ -271,6 +310,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
+
+   // Set unique random seed
+   srand((unsigned)time(NULL));
+
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -313,49 +356,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 
-            /************************************
-            *************************************
-            ******** GOVNOCODE GOES HERE ********
-            *************************************
-            *************************************/
-
-
-            // Defines grass properties
-			RECT clientRect;
-			GetClientRect(hWnd, &clientRect);
-
-            POINT grassTopLeft = CreatePoint(clientRect.left, clientRect.top + 300);
-            POINT grassBottomRight = CreatePoint(clientRect.right, clientRect.bottom);
+            MainDrawingFunction(hdc, hWnd);
             
-
-            // Flower Properties
-            UINT defaultFlowerStemSize = 50;
-            
-            // Defines lake properties
-            POINT lakeRoot = CreatePoint(800, 500);
-            UINT lakeSizeDelta = 100;
-           
-            DrawFloor(hdc, grassTopLeft, grassBottomRight);
-            
-            // Adding flowers on the floor
-            GenerateFlowers(10,
-                clientRect.right - 100, clientRect.bottom, clientRect.left + 100, clientRect.top + 300,
-                hdc, defaultFlowerStemSize
-            );
-
-            // Drawing a lake between two houses
-            DrawLake(hdc, lakeRoot, lakeSizeDelta - 10, lakeSizeDelta+ 10);
-
-            // Draw lake in random location
-            
-
-            // Placing houses
-            newDrawHouse(hdc, CreatePoint(500, 300), 100);
-            newDrawHouse(hdc, CreatePoint(900, 300), 100);
-
-            DrawSkyBox(hdc, 150);
-            DrawSun(hdc, 50);
-       
             EndPaint(hWnd, &ps);
         }
         break;
