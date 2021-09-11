@@ -26,6 +26,12 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 #define myrand(minNum,maxNum) rand() % (maxNum - minNum) + minNum
 
+COLORREF FlowerColors[] = {
+		RGB(128, 128, 0), // Olive
+		RGB(243, 243, 11), // Bright Yellow
+		RGB(0, 255, 0) // Toxic green
+};
+
 POINT CreatePoint(int x, int y) {
 	POINT p = POINT();
 	p.x = x;
@@ -35,14 +41,14 @@ POINT CreatePoint(int x, int y) {
 }
 
 
-void DrawFlower(HDC& hdc, POINT root, UINT stemSize)
+void DrawFlower(HDC& hdc, POINT root, UINT stemSize, COLORREF color)
 {
 
 	MoveToEx(hdc, root.x, root.y, NULL);
 	LineTo(hdc, root.x, root.y + stemSize);
 	
     // Create custom brush in order to draw a "Colored" head of the flower
-    HBRUSH hBrush = CreateSolidBrush(RGB(128, 128, 0));
+    HBRUSH hBrush = CreateSolidBrush(color);
 	SelectObject(hdc, hBrush);
 
     // Represent flower head as ellipse
@@ -162,9 +168,15 @@ void GenerateFlowers(unsigned int flowersToGenerate, unsigned int maxXCoordinate
 		// Delta on what flower steam can change
 		int mutateSizeOfFlowerSteam = myrand(5, 60);
 
-		DrawFlower(hdc, CreatePoint(xCoordinate, yCoordinate), defaultFlowerStemSize + mutateSizeOfFlowerSteam);
+        // Random color number(index in FlowerColors array)
+        COLORREF flowerColor = FlowerColors[myrand(0, 3)];
+        
+
+		DrawFlower(hdc, CreatePoint(xCoordinate, yCoordinate), defaultFlowerStemSize + mutateSizeOfFlowerSteam, flowerColor);
 	}
 }
+
+
 
 /************************************
 **********DRAWING UTILS END**********
