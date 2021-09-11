@@ -41,7 +41,6 @@ POINT CreatePoint(int x, int y) {
 	return p;
 }
 
-
 void DrawFlower(HDC& hdc, POINT root, UINT stemSize, COLORREF color)
 {
 
@@ -116,12 +115,9 @@ void DrawSkyBox(const HDC& hdc, int maximumYCoordinate) {
 
 void newDrawHouse(const HDC& hdc, const POINT topLeft, UINT wallLength) {
     // Draw house using Rectangle and self-made triangle(using 3 lines)
-    // Warning: Roof MUST be above grass upper line, because i cannot fill triangle with custom color
-
-    // Main body of the house that will be a rectangle
-
+    
     // Create custom brush in order to fill rectangle with custom color(wood-like color in our case)
-    HBRUSH hMainBodyBrush = CreateSolidBrush(RGB(186, 140, 99));
+    HBRUSH hMainBodyBrush = CreateSolidBrush(RGB(255, 255, 204));
     SelectObject(hdc, hMainBodyBrush);
     Rectangle(hdc, topLeft.x, topLeft.y, topLeft.x + wallLength, topLeft.y + wallLength);
     
@@ -132,10 +128,50 @@ void newDrawHouse(const HDC& hdc, const POINT topLeft, UINT wallLength) {
     POINT triangleRoofHighestpoint = CreatePoint((int)(topLeft.x + wallLength / 2), (int)(topLeft.y - wallLength / 3));
    
     // Draw a triangle using point we calculated above
-    MoveToEx(hdc, topLeft.x, topLeft.y, NULL);
-    LineTo(hdc, triangleRoofHighestpoint.x, triangleRoofHighestpoint.y);
-    LineTo(hdc, topLeft.x + wallLength, topLeft.y);
-    LineTo(hdc, topLeft.x, topLeft.y);
+    POINT vertices[] = {
+        CreatePoint(topLeft.x, topLeft.y),
+        CreatePoint(triangleRoofHighestpoint.x, triangleRoofHighestpoint.y),
+        CreatePoint(topLeft.x + wallLength, topLeft.y)
+    };
+
+	// Create custom brush in order to fill triangle with custom color(wood-like color in our case)
+	HBRUSH hRoofBrush = CreateSolidBrush(RGB(102, 0, 51));
+	SelectObject(hdc, hRoofBrush);
+
+    Polygon(hdc, vertices, 3); 
+    DeleteObject(hRoofBrush);
+
+
+
+}
+
+void newDrawHouse(const HDC& hdc, const POINT topLeft, UINT wallLength, COLORREF bodyColor, COLORREF roofColor) {
+	// Draw house using Rectangle and self-made triangle(using 3 lines)
+
+	// Create custom brush in order to fill rectangle with custom color(wood-like color in our case)
+	HBRUSH hMainBodyBrush = CreateSolidBrush(bodyColor);
+	SelectObject(hdc, hMainBodyBrush);
+	Rectangle(hdc, topLeft.x, topLeft.y, topLeft.x + wallLength, topLeft.y + wallLength);
+
+	// Do not forget to delete brush object, because we do not want to get a memory leak
+	DeleteObject(hMainBodyBrush);
+
+	// This point represent TOP of the triangle( point there two lines will collide with each other)
+	POINT triangleRoofHighestpoint = CreatePoint((int)(topLeft.x + wallLength / 2), (int)(topLeft.y - wallLength / 3));
+
+	// Draw a triangle using point we calculated above
+	POINT vertices[] = {
+		CreatePoint(topLeft.x, topLeft.y),
+		CreatePoint(triangleRoofHighestpoint.x, triangleRoofHighestpoint.y),
+		CreatePoint(topLeft.x + wallLength, topLeft.y)
+	};
+
+	// Create custom brush in order to fill triangle with custom color(wood-like color in our case)
+	HBRUSH hRoofBrush = CreateSolidBrush(roofColor);
+	SelectObject(hdc, hRoofBrush);
+
+	Polygon(hdc, vertices, 3);
+	DeleteObject(hRoofBrush);
 
 
 
@@ -177,6 +213,8 @@ void GenerateFlowers(unsigned int flowersToGenerate, unsigned int maxXCoordinate
 }
 
 
+
+
 void MainDrawingFunction(const HDC& hdc, const HWND& hWnd) {
 	// Defines grass properties
 	RECT clientRect;
@@ -209,8 +247,11 @@ void MainDrawingFunction(const HDC& hdc, const HWND& hWnd) {
 
 
 	// Placing houses
-	newDrawHouse(hdc, CreatePoint(500, 300), 100);
-	newDrawHouse(hdc, CreatePoint(900, 300), 100);
+	newDrawHouse(hdc, CreatePoint(500, 200), 100);
+
+    // House with custom colors
+	newDrawHouse(hdc, CreatePoint(900, 200), 150, RGB(255, 153, 51), RGB(0, 153, 76));
+   
 
 	DrawSkyBox(hdc, 150);
 	DrawSun(hdc, 50);
