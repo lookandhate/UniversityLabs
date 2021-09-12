@@ -19,221 +19,224 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
+
+
 /************************************
 ************DRAWING UTILS************
 *************************************
 ************************************/
-
-
+namespace DrawingUtils {
 #define myrand(minNum,maxNum) rand() % (maxNum - minNum) + minNum
 
-COLORREF FlowerColors[] = {
-		RGB(128, 128, 0), // Olive
-		RGB(243, 243, 11), // Bright Yellow
-		RGB(0, 255, 0) // Toxic green
-};
+    COLORREF FlowerColors[] = {
+            RGB(128, 128, 0), // Olive
+            RGB(243, 243, 11), // Bright Yellow
+            RGB(0, 255, 0) // Toxic green
+    };
 
-POINT CreatePoint(int x, int y) {
-	POINT p = POINT();
-	p.x = x;
-	p.y = y;
+    POINT CreatePoint(int x, int y) {
+        POINT p = POINT();
+        p.x = x;
+        p.y = y;
 
-	return p;
+        return p;
+    }
+
+    void DrawFlower(HDC & hdc, POINT root, UINT stemSize, COLORREF color)
+    {
+
+        MoveToEx(hdc, root.x, root.y, NULL);
+        LineTo(hdc, root.x, root.y + stemSize);
+
+        // Create custom brush in order to draw a "Colored" head of the flower
+        HBRUSH hBrush = CreateSolidBrush(color);
+        SelectObject(hdc, hBrush);
+
+        // Represent flower head as ellipse
+        Ellipse(hdc, root.x - 16, root.y - 16, root.x + 16, root.y + 16);
+
+        DeleteObject(hBrush);
+
+    }
+
+    void DrawFloor(const HDC & hdc, POINT topLeft, POINT bottomRight)
+    {
+        // Brush with color of the grass
+        auto color = RGB(126, 200, 80);
+        HBRUSH hBrush = CreateSolidBrush(color);
+
+        SelectObject(hdc, hBrush);
+
+        Rectangle(hdc, topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
+
+        DeleteObject(hBrush);
+    }
+
+    void DrawLake(const HDC & hdc, POINT lakeRoot, UINT sizeDelta) {
+        // Draw lake using Circle(i.e x-radius equal to y-radius)
+
+        // Create brush with blue water-like color
+        HBRUSH hBrush = CreateSolidBrush(RGB(0, 141, 151));
+        SelectObject(hdc, hBrush);
+
+        Ellipse(hdc,
+            lakeRoot.x - sizeDelta, lakeRoot.y - sizeDelta,
+            lakeRoot.x + sizeDelta, lakeRoot.y + sizeDelta
+        );
+
+        DeleteObject(hBrush);
+
+
+    }
+
+    void DrawLake(const HDC & hdc, POINT lakeRoot, UINT sizeDeltaX, UINT sizeDeltaY) {
+        // Draw lake using ellipse(i.e x-radius equal is not to y-radius)
+
+        // Create brush with blue water-like color
+        HBRUSH hBrush = CreateSolidBrush(RGB(0, 141, 151));
+        SelectObject(hdc, hBrush);
+
+        Ellipse(hdc,
+            lakeRoot.x - sizeDeltaX, lakeRoot.y - sizeDeltaY,
+            lakeRoot.x + sizeDeltaX, lakeRoot.y + sizeDeltaY
+        );
+
+        DeleteObject(hBrush);
+    }
+
+    void DrawSkyBox(const HDC & hdc, int maximumYCoordinate) {
+        // Draw skybox using blue rectangle
+
+        HBRUSH hBrush = CreateSolidBrush(RGB(173, 216, 230));
+        SelectObject(hdc, hBrush);
+
+        Rectangle(hdc, 0, 0, 100000, maximumYCoordinate);
+
+    }
+
+    void newDrawHouse(const HDC & hdc, const POINT topLeft, UINT wallLength, COLORREF bodyColor, COLORREF roofColor) {
+        // Draw house using Rectangle and self-made triangle(using 3 lines)
+
+        // Create custom brush in order to fill rectangle with custom color(wood-like color in our case)
+        HBRUSH hMainBodyBrush = CreateSolidBrush(bodyColor);
+        SelectObject(hdc, hMainBodyBrush);
+        Rectangle(hdc, topLeft.x, topLeft.y, topLeft.x + wallLength, topLeft.y + wallLength);
+
+        // Do not forget to delete brush object, because we do not want to get a memory leak
+        DeleteObject(hMainBodyBrush);
+
+        // This point represent TOP of the triangle( point there two lines will collide with each other)
+        POINT triangleRoofHighestpoint = CreatePoint((int)(topLeft.x + wallLength / 2), (int)(topLeft.y - wallLength / 3));
+
+        // Draw a triangle using point we calculated above
+        POINT vertices[] = {
+            CreatePoint(topLeft.x, topLeft.y),
+            CreatePoint(triangleRoofHighestpoint.x, triangleRoofHighestpoint.y),
+            CreatePoint(topLeft.x + wallLength, topLeft.y)
+        };
+
+        // Create custom brush in order to fill triangle with custom color(wood-like color in our case)
+        HBRUSH hRoofBrush = CreateSolidBrush(roofColor);
+        SelectObject(hdc, hRoofBrush);
+
+        Polygon(hdc, vertices, 3);
+        DeleteObject(hRoofBrush);
+
+
+
+    }
+
+    void newDrawHouse(const HDC & hdc, const POINT topLeft, UINT wallLength) {
+        newDrawHouse(hdc, topLeft, wallLength, RGB(255, 255, 204), RGB(102, 0, 51));
+    }
+
+    void DrawSun(const HDC & hdc, int size) {
+        // Draw sun using circle( ellipse with equal radiuses
+        HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 0));
+        SelectObject(hdc, hBrush);
+
+        Ellipse(hdc,
+            75 - size, 50 - size,
+            75 + size, 50 + size
+        );
+
+        DeleteObject(hBrush);
+
+    }
+
+    void GenerateFlowers(unsigned int flowersToGenerate, unsigned int maxXCoordinate, unsigned int maxYCoordinate,
+        unsigned int minXCoordinate, unsigned int minYCoordinate, // Need borders because we do not want to spawn flowers in the air
+        HDC hdc, UINT defaultFlowerStemSize
+    )
+    {
+        for (unsigned int i = 0; i < flowersToGenerate; i++) {
+            // coordinate = rand() % (max_number + 1 - minimum_number) + minimum_number
+
+            int xCoordinate = myrand(minXCoordinate, maxXCoordinate);
+            int yCoordinate = myrand(minYCoordinate, maxYCoordinate);
+
+            // Delta on what flower steam can change
+            int mutateSizeOfFlowerSteam = myrand(5, 60);
+
+            // Random color number(index in FlowerColors array)
+            COLORREF flowerColor = FlowerColors[myrand(0, 3)];
+
+            DrawFlower(hdc, CreatePoint(xCoordinate, yCoordinate), defaultFlowerStemSize + mutateSizeOfFlowerSteam, flowerColor);
+        }
+    }
+
+
+
+
+    void MainDrawingFunction(const HDC & hdc, const HWND & hWnd) {
+        // Defines grass properties
+        RECT clientRect;
+        GetClientRect(hWnd, &clientRect);
+
+        POINT grassTopLeft = CreatePoint(clientRect.left, clientRect.top + 300);
+        POINT grassBottomRight = CreatePoint(clientRect.right, clientRect.bottom);
+
+
+        // Flower Properties
+        UINT defaultFlowerStemSize = 50;
+        UINT flowersToSpawn = myrand(10, 50);
+
+        // Defines lake properties
+        POINT lakeRoot = CreatePoint(800, 500);
+        UINT lakeSizeDelta = 100;
+
+        DrawFloor(hdc, grassTopLeft, grassBottomRight);
+
+        // Adding flowers on the floor
+        GenerateFlowers(flowersToSpawn,
+            clientRect.right - 10, clientRect.bottom, clientRect.left + 10, clientRect.top + 300,
+            hdc, defaultFlowerStemSize
+        );
+
+        // Drawing a lake between two houses
+        DrawLake(hdc, lakeRoot, lakeSizeDelta - 10, lakeSizeDelta + 10);
+
+        // Draw lake in random location
+
+
+        // Placing houses
+        newDrawHouse(hdc, CreatePoint(500, 200), 100);
+
+        // House with custom colors
+        newDrawHouse(hdc, CreatePoint(900, 200), 150, RGB(255, 153, 51), RGB(0, 153, 76));
+
+
+        DrawSkyBox(hdc, 150);
+        DrawSun(hdc, 50);
+    }
+
 }
-
-void DrawFlower(HDC& hdc, POINT root, UINT stemSize, COLORREF color)
-{
-
-	MoveToEx(hdc, root.x, root.y, NULL);
-	LineTo(hdc, root.x, root.y + stemSize);
-	
-    // Create custom brush in order to draw a "Colored" head of the flower
-    HBRUSH hBrush = CreateSolidBrush(color);
-	SelectObject(hdc, hBrush);
-
-    // Represent flower head as ellipse
-	Ellipse(hdc, root.x - 16, root.y - 16, root.x + 16, root.y + 16);
-
-    DeleteObject(hBrush);
-
-}
-
-void DrawFloor(const HDC& hdc, POINT topLeft, POINT bottomRight)
-{
-    // Brush with color of the grass
-    auto color = RGB(126, 200, 80);
-    HBRUSH hBrush = CreateSolidBrush(color);
-    
-    SelectObject(hdc, hBrush);
-
-    Rectangle(hdc, topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
-
-    DeleteObject(hBrush);
-}
-
-void DrawLake(const HDC& hdc, POINT lakeRoot, UINT sizeDelta) {
-    // Draw lake using Circle(i.e x-radius equal to y-radius)
-
-    // Create brush with blue water-like color
-    HBRUSH hBrush = CreateSolidBrush(RGB(0, 141, 151));
-    SelectObject(hdc, hBrush);
-
-    Ellipse(hdc,
-        lakeRoot.x - sizeDelta, lakeRoot.y - sizeDelta,
-        lakeRoot.x + sizeDelta, lakeRoot.y + sizeDelta
-    );
-
-    DeleteObject(hBrush);
-    
-
-}
-
-void DrawLake(const HDC& hdc, POINT lakeRoot, UINT sizeDeltaX, UINT sizeDeltaY) {
-	// Draw lake using ellipse(i.e x-radius equal is not to y-radius)
-
-    // Create brush with blue water-like color
-	HBRUSH hBrush = CreateSolidBrush(RGB(0, 141, 151));
-	SelectObject(hdc, hBrush);
-
-	Ellipse(hdc,
-		lakeRoot.x - sizeDeltaX, lakeRoot.y - sizeDeltaY,
-		lakeRoot.x + sizeDeltaX, lakeRoot.y + sizeDeltaY
-	);
-
-	DeleteObject(hBrush);
-}
-
-void DrawSkyBox(const HDC& hdc, int maximumYCoordinate) {
-    // Draw skybox using blue rectangle
-    
-    HBRUSH hBrush = CreateSolidBrush(RGB(173, 216, 230));
-    SelectObject(hdc, hBrush);
-
-    Rectangle(hdc, 0, 0, 100000, maximumYCoordinate);
-    
-}
-
-void newDrawHouse(const HDC& hdc, const POINT topLeft, UINT wallLength, COLORREF bodyColor, COLORREF roofColor) {
-	// Draw house using Rectangle and self-made triangle(using 3 lines)
-
-	// Create custom brush in order to fill rectangle with custom color(wood-like color in our case)
-	HBRUSH hMainBodyBrush = CreateSolidBrush(bodyColor);
-	SelectObject(hdc, hMainBodyBrush);
-	Rectangle(hdc, topLeft.x, topLeft.y, topLeft.x + wallLength, topLeft.y + wallLength);
-
-	// Do not forget to delete brush object, because we do not want to get a memory leak
-	DeleteObject(hMainBodyBrush);
-
-	// This point represent TOP of the triangle( point there two lines will collide with each other)
-	POINT triangleRoofHighestpoint = CreatePoint((int)(topLeft.x + wallLength / 2), (int)(topLeft.y - wallLength / 3));
-
-	// Draw a triangle using point we calculated above
-	POINT vertices[] = {
-		CreatePoint(topLeft.x, topLeft.y),
-		CreatePoint(triangleRoofHighestpoint.x, triangleRoofHighestpoint.y),
-		CreatePoint(topLeft.x + wallLength, topLeft.y)
-	};
-
-	// Create custom brush in order to fill triangle with custom color(wood-like color in our case)
-	HBRUSH hRoofBrush = CreateSolidBrush(roofColor);
-	SelectObject(hdc, hRoofBrush);
-
-	Polygon(hdc, vertices, 3);
-	DeleteObject(hRoofBrush);
-
-
-
-}
-
-void newDrawHouse(const HDC& hdc, const POINT topLeft, UINT wallLength) {
-	newDrawHouse(hdc, topLeft, wallLength, RGB(255, 255, 204), RGB(102, 0, 51));
-}
-
-void DrawSun(const HDC& hdc, int size) {
-    // Draw sun using circle( ellipse with equal radiuses
-	HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 0));
-	SelectObject(hdc, hBrush);
-
-	Ellipse(hdc,
-		75 - size, 50- size,
-		75+ size, 50 + size
-	);
-
-	DeleteObject(hBrush);
-
-}
-
-void GenerateFlowers(unsigned int flowersToGenerate, unsigned int maxXCoordinate, unsigned int maxYCoordinate,
-	unsigned int minXCoordinate, unsigned int minYCoordinate, // Need borders because we do not want to spawn flowers in the air
-	HDC hdc, UINT defaultFlowerStemSize
-)
-{
-	for (unsigned int i = 0; i < flowersToGenerate; i++) {
-		// coordinate = rand() % (max_number + 1 - minimum_number) + minimum_number
-
-		int xCoordinate = myrand(minXCoordinate, maxXCoordinate);
-		int yCoordinate = myrand(minYCoordinate, maxYCoordinate);
-
-		// Delta on what flower steam can change
-		int mutateSizeOfFlowerSteam = myrand(5, 60);
-
-        // Random color number(index in FlowerColors array)
-        COLORREF flowerColor = FlowerColors[myrand(0, 3)];
-        
-		DrawFlower(hdc, CreatePoint(xCoordinate, yCoordinate), defaultFlowerStemSize + mutateSizeOfFlowerSteam, flowerColor);
-	}
-}
-
-
-
-
-void MainDrawingFunction(const HDC& hdc, const HWND& hWnd) {
-	// Defines grass properties
-	RECT clientRect;
-	GetClientRect(hWnd, &clientRect);
-
-	POINT grassTopLeft = CreatePoint(clientRect.left, clientRect.top + 300);
-	POINT grassBottomRight = CreatePoint(clientRect.right, clientRect.bottom);
-
-
-	// Flower Properties
-	UINT defaultFlowerStemSize = 50;
-    UINT flowersToSpawn = myrand(10, 50);
-
-	// Defines lake properties
-	POINT lakeRoot = CreatePoint(800, 500);
-	UINT lakeSizeDelta = 100;
-
-	DrawFloor(hdc, grassTopLeft, grassBottomRight);
-
-	// Adding flowers on the floor
-	GenerateFlowers(flowersToSpawn,
-		clientRect.right - 10, clientRect.bottom, clientRect.left + 10, clientRect.top + 300,
-		hdc, defaultFlowerStemSize
-	);
-
-	// Drawing a lake between two houses
-	DrawLake(hdc, lakeRoot, lakeSizeDelta - 10, lakeSizeDelta + 10);
-
-	// Draw lake in random location
-
-
-	// Placing houses
-	newDrawHouse(hdc, CreatePoint(500, 200), 100);
-
-    // House with custom colors
-	newDrawHouse(hdc, CreatePoint(900, 200), 150, RGB(255, 153, 51), RGB(0, 153, 76));
-   
-
-	DrawSkyBox(hdc, 150);
-	DrawSun(hdc, 50);
-}
-
-
 /************************************
 **********DRAWING UTILS END**********
 *************************************
 ************************************/
+
+using namespace DrawingUtils;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
