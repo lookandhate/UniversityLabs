@@ -135,7 +135,7 @@ namespace DrawingUtils {
             CreatePoint(topLeft.x + wallLength, topLeft.y)
         };
 
-        // Create custom brush in order to fill triangle with custom color(wood-like color in our case)
+        // Create custom brush in order to fill triangle with custom color
         HBRUSH hRoofBrush = CreateSolidBrush(roofColor);
         SelectObject(hdc, hRoofBrush);
 
@@ -206,6 +206,7 @@ namespace DrawingUtils {
         UINT lakeSizeDelta = 100;
 
         DrawFloor(hdc, grassTopLeft, grassBottomRight);
+		DrawSkyBox(hdc, 300);
 
         // Adding flowers on the floor
         GenerateFlowers(flowersToSpawn,
@@ -226,7 +227,6 @@ namespace DrawingUtils {
         newDrawHouse(hdc, CreatePoint(900, 200), 150, RGB(255, 153, 51), RGB(0, 153, 76));
 
 
-        DrawSkyBox(hdc, 150);
         DrawSun(hdc, 50);
     }
 
