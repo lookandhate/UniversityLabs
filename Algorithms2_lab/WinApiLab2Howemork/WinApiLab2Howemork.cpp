@@ -19,6 +19,8 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
+bool bDrawed = false;
+
 
 
 /************************************
@@ -27,6 +29,14 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 ************************************/
 namespace DrawingUtils {
 #define myrand(minNum,maxNum) rand() % (maxNum - minNum) + minNum
+
+    struct FenceProperty {
+		const unsigned int xLengthOfFence = 15;
+		const unsigned int yLengthOfFence = 15;
+        const unsigned int totalPlanksToDraw = 5;
+    };
+    
+    FenceProperty fenceProperty = FenceProperty();
 
     COLORREF FlowerColors[] = {
             RGB(128, 128, 0), // Olive
@@ -185,10 +195,36 @@ namespace DrawingUtils {
         }
     }
 
+	void DrawFence(const HDC& hdc, int startX, int startY, int plankLenght) {
+        const unsigned int pointsSize = 5;
+
+		POINT points[pointsSize] = {
+			{startX, startY},
+			{startX - fenceProperty.xLengthOfFence, startY + fenceProperty.yLengthOfFence              },
+			{startX - fenceProperty.xLengthOfFence, startY + fenceProperty.yLengthOfFence + plankLenght},
+			{startX + fenceProperty.xLengthOfFence, startY + fenceProperty.yLengthOfFence + plankLenght},
+			{startX + fenceProperty.xLengthOfFence, startY + fenceProperty.yLengthOfFence              },
+		};
+		Polygon(hdc, points, pointsSize);
+	}
+
+	void DrawRecursiveFence(const HDC& hdc, int startX, int startY, int plankLentgh, int planksToDraw, int totalPlanks)
+    {
+        if (planksToDraw <= 0)
+			return;
+		DrawFence(hdc, startX + (totalPlanks - planksToDraw) * fenceProperty.xLengthOfFence * 2, startY, plankLentgh);
+		DrawRecursiveFence(hdc, startX, startY, plankLentgh, planksToDraw - 1, totalPlanks);
+
+
+	}
+
 
 
 
     void MainDrawingFunction(const HDC & hdc, const HWND & hWnd) {
+
+        bDrawed = true;
+
         // Defines grass properties
         RECT clientRect;
         GetClientRect(hWnd, &clientRect);
@@ -217,9 +253,6 @@ namespace DrawingUtils {
         // Drawing a lake between two houses
         DrawLake(hdc, lakeRoot, lakeSizeDelta - 10, lakeSizeDelta + 10);
 
-        // Draw lake in random location
-
-
         // Placing houses
         newDrawHouse(hdc, CreatePoint(500, 200), 100);
 
@@ -227,9 +260,23 @@ namespace DrawingUtils {
         newDrawHouse(hdc, CreatePoint(900, 200), 150, RGB(255, 153, 51), RGB(0, 153, 76));
 
 
+        COLORREF fenceColor = RGB(149, 114, 18);
+
+		// Create custom brush in order to fill fence with custom color
+        // Creating it here cuz i dont want to recreate and delete it on each recursive call of DrawRecursiveFence fuction
+		HBRUSH hFenceBrush = CreateSolidBrush(fenceColor);
+		SelectObject(hdc, hFenceBrush);
+
+        // Recursivly draw fence near first house
+        DrawRecursiveFence(hdc, 420, 240, 50, 10, 10);
+
+        // Delete fence brush
+        DeleteObject(hFenceBrush);
+
         DrawSun(hdc, 50);
     }
 
+   
 }
 /************************************
 **********DRAWING UTILS END**********
@@ -372,7 +419,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 
-            MainDrawingFunction(hdc, hWnd);
+            //DrawFence(hdc, 50, 50, 100);
+
+            
+            if(!bDrawed)
+                MainDrawingFunction(hdc, hWnd);
+
             
             EndPaint(hWnd, &ps);
         }
