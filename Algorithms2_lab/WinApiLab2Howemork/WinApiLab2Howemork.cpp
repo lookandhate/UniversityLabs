@@ -1,4 +1,4 @@
-// WinApiLab2Howemork.cpp : Defines the entry point for the application.
+﻿// WinApiLab2Howemork.cpp : Defines the entry point for the application.
 //
 
 #include "framework.h"
@@ -218,7 +218,24 @@ namespace DrawingUtils {
 
 	}
 
+    void LinesInLoop(const HDC& hdc, int linesToDraw)
+    {
+        int startX = 200;
+        int startY = 200;
+        
+        int endX = startX + 50;
+        int endY = startY - 20;
 
+        int stepXStart = -10;
+        int stepYEnd = -10;
+        for (int i = 0; i < linesToDraw; i++)
+        {
+            MoveToEx(hdc, startX, startY, NULL);
+            LineTo(hdc, endX, endY);
+            startX += stepXStart;
+            endY += stepYEnd;
+        }
+    }
 
 
     void MainDrawingFunction(const HDC & hdc, const HWND & hWnd) {
@@ -419,12 +436,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 
+            // Забор
             //DrawFence(hdc, 50, 50, 100);
-
             
-            if(!bDrawed)
-                MainDrawingFunction(hdc, hWnd);
-
+            // Деревня
+            //MainDrawingFunction(hdc, hWnd);
+            
+            // Линии циклом
+            LinesInLoop(hdc, 20);
             
             EndPaint(hWnd, &ps);
         }
