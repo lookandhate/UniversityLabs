@@ -9,7 +9,7 @@
 
 
 #define X_LENGHT_OF_COLUMN 50 // Длина линии на оси oX для столбца
-#define BOTTOM_Y_FOR_COLUMN 300 // кКооридната 
+#define BOTTOM_Y_FOR_COLUMN 300 // Кооридната 
 
 #define PATH_TO_FILE "C:\\Users\\root\\Desktop\\test.txt"
 
@@ -105,7 +105,10 @@ void DrawDiagram(HDC& hdc, size_t arraySize, int arrayToDraw[], int startY)
     MoveToEx(hdc, startX - X_LENGHT_OF_COLUMN, startY - 100, NULL);
     LineTo(hdc, startX - X_LENGHT_OF_COLUMN + 5, startY - 95);
 
-    DeleteObject(pen);
+    if (DeleteObject(pen) == 0)
+    {
+        DebugBreak();
+    };
 }
 
 //

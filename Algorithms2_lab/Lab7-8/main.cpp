@@ -6,8 +6,8 @@
 
 #ifdef MY_PC
 #define PATH_TO_INPUT_TEXT_FILE "C:\\Users\\root\\Desktop\\LabsTextFiles\\input.txt.txt"
-
 #define PATH_TO_OUTPUT_FILE "C:\\Users\\root\\Desktop\\LabsTextFiles\\output_d.txt"
+
 #else
 #define PATH_TO_INPUT_TEXT_FILE "C:\\Users\\USER\\Desktop\\input.txt"
 #define PATH_TO_OUTPUT_FILE "C:\\Users\\USER\\Desktop\\output.txt"
@@ -211,7 +211,7 @@ namespace Lab7
 		int newSize = 0;
 		for (int i = 0; i < arraySize; i++)
 		{
-			// i not in [leftBorder;rightBorder] -> saving all elements
+			// row not in [leftBorder;rightBorder] -> saving all elements
 			if (i <= leftBorder || i >= rightBorder)
 			{
 				arrayPointer[newSize] = arrayPointer[i];
@@ -352,7 +352,7 @@ namespace Lab8
 		int newSize = 0;
 		for (int i = 0; i < arraySize; i++)
 		{
-			// i not in [leftBorder;rightBorder] -> saving all elements
+			// row not in [leftBorder;rightBorder] -> saving all elements
 			if (i <= leftBorder || i >= rightBorder)
 			{
 				arrayPointer[newSize] = arrayPointer[i];
@@ -373,6 +373,8 @@ namespace Lab8
 	}
 
 }
+
+
 int main()
 {
 	//Lab7::TaskD();
