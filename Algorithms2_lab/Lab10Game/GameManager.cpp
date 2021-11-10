@@ -154,7 +154,13 @@ void GameManager::NextLevel()
 	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber]);
 }
 
+void GameManager::ReloadCurrentLevel()
+{
+	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber]);
+}
+
 void GameManager::ChangeGameState(int newState)
 {
 	m_CurrentGameState = newState;
 }
+

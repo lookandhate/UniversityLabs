@@ -52,6 +52,8 @@ public:
 
 	void NextLevel();
 
+	void ReloadCurrentLevel();
+
 private:
 	int GetLevelObjectAtPosition(const Position& pos) const;
 	Position CalculatePossiblePositionAfterMovement(int movementDirection) const;
