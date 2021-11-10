@@ -44,6 +44,7 @@ void GameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 
 	for (int row = 0; row < m_CurrentLevelMapRows; row++)
 	{
+		// Allocation memory for column
 		m_CurrentLevelMapMatrix[row] = (int*)malloc(m_CurrentLevelMapColumns * sizeof(int));
 		for (int column = 0; column < m_CurrentLevelMapColumns; column++)
 		{

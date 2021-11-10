@@ -74,7 +74,7 @@ namespace DrawingUtils {
             for (int column = 0; column < columns; column++)
             {
                 
-                SelectObject(hdc, brushesForObjects[matrixToDraw[row][column]]);
+                SelectObject(hdc, brushesForObjects[matrixToDraw[row][column] - 1]);
 
                 Rectangle(hdc, (column * 40) + baseXOffset, // x left
                     row * 40 + baseYOffset, //y top
