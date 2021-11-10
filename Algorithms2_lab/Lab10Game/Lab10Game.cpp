@@ -207,6 +207,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             gameManager->NextLevel();
             break;
         }
+        
+        case VK_F3:
+        {
+            gameManager->ReloadCurrentLevel();
+            break;
+        }
+
 #endif
         }
         InvalidateRect(hWnd, NULL, TRUE);

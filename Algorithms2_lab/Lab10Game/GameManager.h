@@ -27,6 +27,11 @@ enum GameConditions
 	NotStarted, InProcess, LostDueExplosion, WonCurrentLevel, WonAllLevels
 };
 
+enum MovementResult
+{
+	NotMovedDueWall, MovedOnEmptyCell, MovedOnBomb, MovedOnLevelEnd
+};
+
 typedef struct Position
 {
 	int row, column;
@@ -38,7 +43,7 @@ public:
 	void LoadLevel(int levelNumber, const char* levelFilePath);
 	
 	// Changes player position on map
-	void MovePlayer(int movementDirection);
+	int MovePlayer(int movementDirection);
 	
 	// Checks if player can move in given movementDirection(checks for obsticales and so on)
 	bool ValidateMovement(int movementDirection) const;

@@ -85,16 +85,34 @@ int** GameManager::GetLevelMatrixPointer()
 }
 
 // Movement functionallity
-void GameManager::MovePlayer(int movementDirection)
+int GameManager::MovePlayer(int movementDirection)
 {
 	if (!ValidateMovement(movementDirection))
-		return;
+		return MovementResult::NotMovedDueWall;
+
 
 	// Getting new player position
 	Position newPosition = CalculatePossiblePositionAfterMovement(movementDirection);
+	int objectOnNewPosition = GetLevelObjectAtPosition(newPosition);
 	m_CurrentLevelMapMatrix[newPosition.row - 1][newPosition.column - 1] = LevelObjects::Player;
 	m_CurrentLevelMapMatrix[m_CurrentPlayerPosition.row - 1][m_CurrentPlayerPosition.column - 1] = LevelObjects::Empty;
 	m_CurrentPlayerPosition = newPosition;
+
+	int movementResult = MovementResult::MovedOnEmptyCell;
+
+	switch (objectOnNewPosition)
+	{
+	case LevelObjects::Empty:
+		break;
+	case LevelObjects::Explosive:
+		movementResult = MovementResult::MovedOnBomb;
+		break;
+	case LevelObjects::LevelEnd:
+		movementResult = MovementResult::MovedOnLevelEnd;
+		break;
+	}
+	return movementResult;
+
 
 }
 
@@ -162,5 +180,9 @@ void GameManager::ReloadCurrentLevel()
 void GameManager::ChangeGameState(int newState)
 {
 	m_CurrentGameState = newState;
+	if (m_CurrentGameState == GameConditions::LostDueExplosion)
+	{
+		ReloadCurrentLevel();
+	}
 }
 
