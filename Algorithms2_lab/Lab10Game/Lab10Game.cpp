@@ -219,10 +219,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (movementResult)
         {
         case EMovementResult::MovedOnBomb:
+            MessageBox(hWnd, L"You are moved on bomb. restart level", NULL, MB_OK);
             // TODO ADD MESSAGE BOX THAT ALERTS ABOUT LOSE
             gameManager->ChangeGameState(EGameConditions::LostDueExplosion);
             break;
         case EMovementResult::MovedOnLevelEnd:
+            MessageBox(hWnd, L"You passed level, proceed to the next one", NULL, MB_OK);
             gameManager->ChangeGameState(EGameConditions::WonCurrentLevel);
 
         }

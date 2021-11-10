@@ -7,7 +7,7 @@
 #define GameDebug 1
 
 #define PLAYABLE_LEVELS_COUNT 0
-#define DEBUGGING_LEVELS_COUNT 2
+#define DEBUGGING_LEVELS_COUNT 4
 
 const char* mlevelPaths[];
 HBRUSH brushesForObjects[];
