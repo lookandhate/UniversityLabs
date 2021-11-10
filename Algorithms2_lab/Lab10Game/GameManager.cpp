@@ -1,6 +1,23 @@
 #include "GameManager.h"
+#include <Windows.h>
 
-void GameManager::LoadLevel(int levelNumber, char* levelFilePath)
+const char* mlevelPaths[] = {
+
+#if GameDebug 1
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevel.txt"
+#endif
+};
+
+//  Brushes for coloring each of gameObject
+HBRUSH brushesForObjects[] = {
+	CreateSolidBrush(RGB(255,255,255)), // Empty - White
+	CreateSolidBrush(RGB(0,255,0)), // Player - Green
+	CreateSolidBrush(RGB(58,58,58)), // Wall - Gray
+	CreateSolidBrush(RGB(255,0,0)), // Explosive - Red
+	CreateSolidBrush(RGB(255,255,0)), // LevelEnd - Yellow
+};
+
+void GameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 {
 	// LEVEL FILE FORMAT
 	// ROWS, COLUMNS - 2 VARIABLES
@@ -33,6 +50,19 @@ void GameManager::LoadLevel(int levelNumber, char* levelFilePath)
 
 }
 
+void GameManager::MovePlayer(int movementDirection)
+{
+	if (!ValidateMovement(movementDirection))
+		return;
+
+	// Getting new player position
+	Position newPosition = CalculatePossiblePositionAfterMovement(movementDirection);
+	m_CurrentLevelMapMatrix[newPosition.row][newPosition.column] = LevelObjects::Player;
+	m_CurrentLevelMapMatrix[m_CurrentPlayerPosition.row][m_CurrentPlayerPosition.column] = LevelObjects::Empty;
+	m_CurrentPlayerPosition = newPosition;
+
+}
+
 bool GameManager::ValidateMovement(int direction) const
 {
 	// First of all we cant move outside of level boundaries even if there no any wall.
@@ -51,11 +81,53 @@ bool GameManager::ValidateMovement(int direction) const
 		return false;
 
 	// Now, we have to check if we moving at wall. If so - return false
-	if(GetLevelObjectAtPosition)
+	if (GetLevelObjectAtPosition(CalculatePossiblePositionAfterMovement(direction)) == LevelObjects::Wall)
+	{
+		return false;
+	}
 
+	// All checks are passed
+	return true;
+}
+
+int** GameManager::GetLevelMatrixPointer()
+{
+	return m_CurrentLevelMapMatrix;
+}
+
+int GameManager::GetRowsCount() const
+{
+	return m_CurrentLevelMapRows;
+}
+
+int GameManager::GetColumnsCount() const
+{
+	return m_CurrentLevelMapColumns;
 }
 
 int GameManager::GetLevelObjectAtPosition(const Position& pos) const
 {
-	return 0;
+	return m_CurrentLevelMapMatrix[pos.row][pos.column];
+}
+
+Position GameManager::CalculatePossiblePositionAfterMovement(int movementDirection) const
+{
+	Position possibleNewPosition = m_CurrentPlayerPosition;
+	switch (movementDirection)
+	{
+	case PlayerMovementDirection::Down:
+		possibleNewPosition.row += 1;
+		break;
+	case PlayerMovementDirection::Up:
+		possibleNewPosition.row -= 1;
+		break;
+	case PlayerMovementDirection::Right:
+		possibleNewPosition.column += 1;
+		break;
+	case PlayerMovementDirection::Left:
+		possibleNewPosition.column -= 1;
+		break;
+
+	}
+	return possibleNewPosition;
 }

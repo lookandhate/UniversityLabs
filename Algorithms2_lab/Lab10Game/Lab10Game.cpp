@@ -3,6 +3,9 @@
 
 #include "framework.h"
 #include "Lab10Game.h"
+#include "GameManager.h"
+
+
 
 #define MAX_LOADSTRING 100
 
@@ -56,6 +59,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 }
 
 
+GameManager* gameManager = new GameManager();
+
+
+namespace DrawingUtils {
+
+
+    void DrawLevelMatrixOnScreen(int rows, int columns, const HDC& hdc, int** matrixToDraw)
+    {
+        int baseXOffset = 100;
+        int baseYOffset = 100;
+        for (int row = 0; row < rows; row++)
+        {
+            for (int column = 0; column < columns; column++)
+            {
+                
+                SelectObject(hdc, brushesForObjects[**(matrixToDraw + (row * rows) + column)]);
+
+                Rectangle(hdc, (column * 40) + baseXOffset, // x left
+                    row * 40 + baseYOffset, //y top
+                    (column + 1) * 40 + baseXOffset, //x right
+                    (row + 1) * 40 + baseYOffset //y bottom
+                );
+            }
+        }
+    }
+}
 
 //
 //  FUNCTION: MyRegisterClass()
@@ -105,6 +134,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
+   // Load first level in init
+   gameManager->LoadLevel(1, mlevelPaths[0]);
+
+
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -146,6 +179,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+            
+            DrawingUtils::DrawLevelMatrixOnScreen(gameManager->GetRowsCount(), gameManager->GetColumnsCount(), hdc, gameManager->GetLevelMatrixPointer());
+
+
             // TODO: Add any drawing code that uses hdc here...
             EndPaint(hWnd, &ps);
         }

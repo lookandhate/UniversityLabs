@@ -1,6 +1,13 @@
 #pragma once
 #define MAX_LEVEL_LENGTH 100
 #include <stdio.h>
+#include <Windows.h>
+
+
+#define GameDebug 1
+
+const char* mlevelPaths[];
+HBRUSH brushesForObjects[];
 
 enum PlayerMovementDirection
 {
@@ -9,7 +16,12 @@ enum PlayerMovementDirection
 
 enum LevelObjects
 {
-	Empty, Player, Wall, Explosive, LevelEnd
+	Empty = 1, Player, Wall, Explosive, LevelEnd
+};
+
+enum GameConditions
+{
+	NotStarted, InProcess, LostDueExplosion, WonCurrentLevel, WonAllLevels
 };
 
 typedef struct Position
@@ -20,16 +32,22 @@ typedef struct Position
 class GameManager
 {
 public:
-	void LoadLevel(int levelNumber, char* levelFilePath);
+	void LoadLevel(int levelNumber, const char* levelFilePath);
 	
 	// Changes player position on map
-	void MovePlayer(int direction);
+	void MovePlayer(int movementDirection);
 	
-	// Checks if player can move in given direction(checks for obsticales and so on)
-	bool ValidateMovement(int direction) const;
+	// Checks if player can move in given movementDirection(checks for obsticales and so on)
+	bool ValidateMovement(int movementDirection) const;
+
+	int** GetLevelMatrixPointer();
+
+	int GetRowsCount() const;
+	int GetColumnsCount() const;
 
 private:
 	int GetLevelObjectAtPosition(const Position& pos) const;
+	Position CalculatePossiblePositionAfterMovement(int movementDirection) const;
 
 private:
 
@@ -56,11 +74,6 @@ private:
 	// 3 - Player won current level
 	// 4 - Player won all levels
 	int m_CurrentGameCondition = 0;
-
-
-
-
-
 
 };
 
