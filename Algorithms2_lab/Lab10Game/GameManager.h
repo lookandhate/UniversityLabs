@@ -6,6 +6,9 @@
 
 #define GameDebug 1
 
+#define PLAYABLE_LEVELS_COUNT 0
+#define DEBUGGING_LEVELS_COUNT 2
+
 const char* mlevelPaths[];
 HBRUSH brushesForObjects[];
 
@@ -44,10 +47,16 @@ public:
 
 	int GetRowsCount() const;
 	int GetColumnsCount() const;
+	
+	void ChangeGameState(int newState);
+
+	void NextLevel();
 
 private:
 	int GetLevelObjectAtPosition(const Position& pos) const;
 	Position CalculatePossiblePositionAfterMovement(int movementDirection) const;
+
+	
 
 private:
 
@@ -64,8 +73,11 @@ private:
 	Position m_CurrentPlayerPosition;
 
 	// Levels Count
-	int m_LevelsCount = 1;
-
+#if GameDebug 1
+	int m_LevelsCount = PLAYABLE_LEVELS_COUNT + DEBUGGING_LEVELS_COUNT;
+#else
+	int m_LevelsCount = PLAYABLE_LEVELS_COUNT;
+#endif
 	
 	// Game conditions: 
 	// 0 - Game aint started yet
@@ -73,7 +85,7 @@ private:
 	// 2 - Player Lost because of stepping on the bomb
 	// 3 - Player won current level
 	// 4 - Player won all levels
-	int m_CurrentGameCondition = 0;
+	int m_CurrentGameState = 0;
 
 };
 

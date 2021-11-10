@@ -1,10 +1,12 @@
 #include "GameManager.h"
 #include <Windows.h>
 
+
 const char* mlevelPaths[] = {
 
 #if GameDebug 1
-	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevel.txt"
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevel.txt",
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelEmpty.txt"
 #endif
 };
 
@@ -29,6 +31,7 @@ void GameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 	int openningError = fopen_s(&levelFilePtr, levelFilePath, "rt");
 	if (openningError)
 	{
+		exit(0);
 		// TODO: handle file openning error
 	}
 	// Read rows and columns count on current level
@@ -51,57 +54,14 @@ void GameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 			fscanf_s(levelFilePtr, "%d", &m_CurrentLevelMapMatrix[row][column]);
 		}
 	}
+	m_CurrentPlayerPosition = m_LevelPlayerStartPosition;
 
 	// Close file after loading level information
 	fclose(levelFilePtr);
 
 }
 
-void GameManager::MovePlayer(int movementDirection)
-{
-	if (!ValidateMovement(movementDirection))
-		return;
-
-	// Getting new player position
-	Position newPosition = CalculatePossiblePositionAfterMovement(movementDirection);
-	m_CurrentLevelMapMatrix[newPosition.row][newPosition.column] = LevelObjects::Player;
-	m_CurrentLevelMapMatrix[m_CurrentPlayerPosition.row][m_CurrentPlayerPosition.column] = LevelObjects::Empty;
-	m_CurrentPlayerPosition = newPosition;
-
-}
-
-bool GameManager::ValidateMovement(int direction) const
-{
-	// First of all we cant move outside of level boundaries even if there no any wall.
-	// For example, we cant move up, if current player row 0 or maximum row
-	if (
-		(m_CurrentPlayerPosition.row == 0 && direction == PlayerMovementDirection::Up)
-		|| (m_CurrentPlayerPosition.row + 1 == m_CurrentLevelMapRows && PlayerMovementDirection::Down)
-		)
-		return false;
-
-	// In the same way handle side-movements
-	if (
-		(m_CurrentPlayerPosition.column == 0 && direction == PlayerMovementDirection::Left)
-		|| (m_CurrentPlayerPosition.column + 1 == m_CurrentLevelMapRows && PlayerMovementDirection::Right)
-		)
-		return false;
-
-	// Now, we have to check if we moving at wall. If so - return false
-	if (GetLevelObjectAtPosition(CalculatePossiblePositionAfterMovement(direction)) == LevelObjects::Wall)
-	{
-		return false;
-	}
-
-	// All checks are passed
-	return true;
-}
-
-int** GameManager::GetLevelMatrixPointer()
-{
-	return m_CurrentLevelMapMatrix;
-}
-
+// Getters for internal fields
 int GameManager::GetRowsCount() const
 {
 	return m_CurrentLevelMapRows;
@@ -114,7 +74,55 @@ int GameManager::GetColumnsCount() const
 
 int GameManager::GetLevelObjectAtPosition(const Position& pos) const
 {
-	return m_CurrentLevelMapMatrix[pos.row][pos.column];
+	if (pos.row == 0 || pos.column == 0)
+		return LevelObjects::Wall;
+	return m_CurrentLevelMapMatrix[pos.row - 1][pos.column - 1];
+}
+
+int** GameManager::GetLevelMatrixPointer()
+{
+	return m_CurrentLevelMapMatrix;
+}
+
+// Movement functionallity
+void GameManager::MovePlayer(int movementDirection)
+{
+	if (!ValidateMovement(movementDirection))
+		return;
+
+	// Getting new player position
+	Position newPosition = CalculatePossiblePositionAfterMovement(movementDirection);
+	m_CurrentLevelMapMatrix[newPosition.row - 1][newPosition.column - 1] = LevelObjects::Player;
+	m_CurrentLevelMapMatrix[m_CurrentPlayerPosition.row - 1][m_CurrentPlayerPosition.column - 1] = LevelObjects::Empty;
+	m_CurrentPlayerPosition = newPosition;
+
+}
+
+bool GameManager::ValidateMovement(int direction) const
+{
+	// First of all we cant move outside of level boundaries even if there no any wall.
+	// For example, we cant move up, if current player row 0 or maximum row
+	if (
+		(m_CurrentPlayerPosition.row == 0 && direction == PlayerMovementDirection::Up)
+		|| (m_CurrentPlayerPosition.row == m_CurrentLevelMapRows && direction == PlayerMovementDirection::Down)
+		)
+		return false;
+
+	// In the same way handle side-movements
+	if (
+		(m_CurrentPlayerPosition.column == 0 && direction == PlayerMovementDirection::Left)
+		|| (m_CurrentPlayerPosition.column == m_CurrentLevelMapRows && direction == PlayerMovementDirection::Right)
+		)
+		return false;
+
+	// Now, we have to check if we moving at wall. If so - return false
+	if (GetLevelObjectAtPosition(CalculatePossiblePositionAfterMovement(direction)) == LevelObjects::Wall)
+	{
+		return false;
+	}
+
+	// All checks are passed
+	return true;
 }
 
 Position GameManager::CalculatePossiblePositionAfterMovement(int movementDirection) const
@@ -137,4 +145,16 @@ Position GameManager::CalculatePossiblePositionAfterMovement(int movementDirecti
 
 	}
 	return possibleNewPosition;
+}
+
+// GameCycle methods
+void GameManager::NextLevel()
+{
+	m_CurrentLevelNumber = (m_CurrentLevelNumber) % m_LevelsCount;
+	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber]);
+}
+
+void GameManager::ChangeGameState(int newState)
+{
+	m_CurrentGameState = newState;
 }

@@ -175,6 +175,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+    case WM_KEYDOWN:
+    {
+        int pressedKey = wParam;
+        switch (pressedKey)
+        {
+        case VK_LEFT:
+        {
+            gameManager->MovePlayer(PlayerMovementDirection::Left);
+            break;
+        }
+        case VK_RIGHT:
+        {
+            gameManager->MovePlayer(PlayerMovementDirection::Right);
+            break;
+        }
+        case VK_UP:
+        {
+            gameManager->MovePlayer(PlayerMovementDirection::Up);
+            break;
+        }
+        case VK_DOWN:
+        {
+            gameManager->MovePlayer(PlayerMovementDirection::Down);
+            break;
+        }
+#if GameDebug 1
+        // Debug cheat that proceeds to next level
+        case VK_F2:
+        {
+            gameManager->NextLevel();
+            break;
+        }
+#endif
+        }
+        InvalidateRect(hWnd, NULL, TRUE);
+    }
+
+    
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
