@@ -37,8 +37,14 @@ void GameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 	// Read player start position
 	fscanf_s(levelFilePtr, "%d%d", &m_LevelPlayerStartPosition.row, &m_LevelPlayerStartPosition.column);
 
+	// Allocating memory for level matrix
+
+	// Here allocation memory for pointers to array of pointers
+	m_CurrentLevelMapMatrix = (int**)malloc(m_CurrentLevelMapRows * sizeof(int*));
+
 	for (int row = 0; row < m_CurrentLevelMapRows; row++)
 	{
+		m_CurrentLevelMapMatrix[row] = (int*)malloc(m_CurrentLevelMapColumns * sizeof(int));
 		for (int column = 0; column < m_CurrentLevelMapColumns; column++)
 		{
 			fscanf_s(levelFilePtr, "%d", &m_CurrentLevelMapMatrix[row][column]);
