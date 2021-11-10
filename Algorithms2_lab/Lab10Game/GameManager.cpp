@@ -168,13 +168,15 @@ Position CGameManager::CalculatePossiblePositionAfterMovement(int movementDirect
 // GameCycle methods
 void CGameManager::NextLevel()
 {
-	m_CurrentLevelNumber = (m_CurrentLevelNumber) % m_LevelsCount;
-	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber]);
+	//m_CurrentLevelNumber = (m_CurrentLevelNumber + 1) % m_LevelsCount + 1;
+	m_CurrentLevelNumber = (m_CurrentLevelNumber + 1 <= m_LevelsCount) ? m_CurrentLevelNumber + 1 : (m_CurrentLevelNumber + 1) % m_LevelsCount;
+
+	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber - 1]);
 }
 
 void CGameManager::ReloadCurrentLevel()
 {
-	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber]);
+	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber - 1]);
 }
 
 void CGameManager::ChangeGameState(int newState)
@@ -183,6 +185,11 @@ void CGameManager::ChangeGameState(int newState)
 	if (m_CurrentGameState == EGameConditions::LostDueExplosion)
 	{
 		ReloadCurrentLevel();
+	}
+
+	if (m_CurrentGameState == EGameConditions::WonCurrentLevel)
+	{
+		NextLevel();
 	}
 }
 

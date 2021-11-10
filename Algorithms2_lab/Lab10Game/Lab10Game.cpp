@@ -178,26 +178,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_KEYDOWN:
     {
         int pressedKey = wParam;
+        int movementResult = 0;
         switch (pressedKey)
         {
         case VK_LEFT:
         {
-            gameManager->MovePlayer(EPlayerMovementDirection::Left);
+            movementResult = gameManager->MovePlayer(EPlayerMovementDirection::Left);
             break;
         }
         case VK_RIGHT:
         {
-            gameManager->MovePlayer(EPlayerMovementDirection::Right);
+            movementResult = gameManager->MovePlayer(EPlayerMovementDirection::Right);
             break;
         }
         case VK_UP:
         {
-            gameManager->MovePlayer(EPlayerMovementDirection::Up);
+            movementResult = gameManager->MovePlayer(EPlayerMovementDirection::Up);
             break;
         }
         case VK_DOWN:
         {
-            gameManager->MovePlayer(EPlayerMovementDirection::Down);
+            movementResult = gameManager->MovePlayer(EPlayerMovementDirection::Down);
             break;
         }
 #if GameDebug 1
@@ -213,9 +214,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             gameManager->ReloadCurrentLevel();
             break;
         }
-
 #endif
         }
+        switch (movementResult)
+        {
+        case EMovementResult::MovedOnBomb:
+            // TODO ADD MESSAGE BOX THAT ALERTS ABOUT LOSE
+            gameManager->ChangeGameState(EGameConditions::LostDueExplosion);
+            break;
+        case EMovementResult::MovedOnLevelEnd:
+            gameManager->ChangeGameState(EGameConditions::WonCurrentLevel);
+
+        }
+
         InvalidateRect(hWnd, NULL, TRUE);
     }
 
