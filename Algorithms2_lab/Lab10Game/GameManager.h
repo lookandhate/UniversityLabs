@@ -12,22 +12,22 @@
 const char* mlevelPaths[];
 HBRUSH brushesForObjects[];
 
-enum PlayerMovementDirection
+enum EPlayerMovementDirection
 {
 	Up, Down, Left, Right
 };
 
-enum LevelObjects
+enum ELevelObjects
 {
 	Empty = 1, Player, Wall, Explosive, LevelEnd
 };
 
-enum GameConditions
+enum EGameConditions
 {
 	NotStarted, InProcess, LostDueExplosion, WonCurrentLevel, WonAllLevels
 };
 
-enum MovementResult
+enum EMovementResult
 {
 	NotMovedDueWall, MovedOnEmptyCell, MovedOnBomb, MovedOnLevelEnd
 };
@@ -37,7 +37,7 @@ typedef struct Position
 	int row, column;
 } Position;
 
-class GameManager
+class CGameManager
 {
 public:
 	void LoadLevel(int levelNumber, const char* levelFilePath);

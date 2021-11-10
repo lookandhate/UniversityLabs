@@ -59,7 +59,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 }
 
 
-GameManager* gameManager = new GameManager();
+CGameManager* gameManager = new CGameManager();
 
 
 namespace DrawingUtils {
@@ -182,22 +182,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
         case VK_LEFT:
         {
-            gameManager->MovePlayer(PlayerMovementDirection::Left);
+            gameManager->MovePlayer(EPlayerMovementDirection::Left);
             break;
         }
         case VK_RIGHT:
         {
-            gameManager->MovePlayer(PlayerMovementDirection::Right);
+            gameManager->MovePlayer(EPlayerMovementDirection::Right);
             break;
         }
         case VK_UP:
         {
-            gameManager->MovePlayer(PlayerMovementDirection::Up);
+            gameManager->MovePlayer(EPlayerMovementDirection::Up);
             break;
         }
         case VK_DOWN:
         {
-            gameManager->MovePlayer(PlayerMovementDirection::Down);
+            gameManager->MovePlayer(EPlayerMovementDirection::Down);
             break;
         }
 #if GameDebug 1

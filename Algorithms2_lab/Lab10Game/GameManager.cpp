@@ -19,7 +19,7 @@ HBRUSH brushesForObjects[] = {
 	CreateSolidBrush(RGB(255,255,0)), // LevelEnd - Yellow
 };
 
-void GameManager::LoadLevel(int levelNumber, const char* levelFilePath)
+void CGameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 {
 	// LEVEL FILE FORMAT
 	// ROWS, COLUMNS - 2 VARIABLES
@@ -62,53 +62,53 @@ void GameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 }
 
 // Getters for internal fields
-int GameManager::GetRowsCount() const
+int CGameManager::GetRowsCount() const
 {
 	return m_CurrentLevelMapRows;
 }
 
-int GameManager::GetColumnsCount() const
+int CGameManager::GetColumnsCount() const
 {
 	return m_CurrentLevelMapColumns;
 }
 
-int GameManager::GetLevelObjectAtPosition(const Position& pos) const
+int CGameManager::GetLevelObjectAtPosition(const Position& pos) const
 {
 	if (pos.row == 0 || pos.column == 0)
-		return LevelObjects::Wall;
+		return ELevelObjects::Wall;
 	return m_CurrentLevelMapMatrix[pos.row - 1][pos.column - 1];
 }
 
-int** GameManager::GetLevelMatrixPointer()
+int** CGameManager::GetLevelMatrixPointer()
 {
 	return m_CurrentLevelMapMatrix;
 }
 
 // Movement functionallity
-int GameManager::MovePlayer(int movementDirection)
+int CGameManager::MovePlayer(int movementDirection)
 {
 	if (!ValidateMovement(movementDirection))
-		return MovementResult::NotMovedDueWall;
+		return EMovementResult::NotMovedDueWall;
 
 
 	// Getting new player position
 	Position newPosition = CalculatePossiblePositionAfterMovement(movementDirection);
 	int objectOnNewPosition = GetLevelObjectAtPosition(newPosition);
-	m_CurrentLevelMapMatrix[newPosition.row - 1][newPosition.column - 1] = LevelObjects::Player;
-	m_CurrentLevelMapMatrix[m_CurrentPlayerPosition.row - 1][m_CurrentPlayerPosition.column - 1] = LevelObjects::Empty;
+	m_CurrentLevelMapMatrix[newPosition.row - 1][newPosition.column - 1] = ELevelObjects::Player;
+	m_CurrentLevelMapMatrix[m_CurrentPlayerPosition.row - 1][m_CurrentPlayerPosition.column - 1] = ELevelObjects::Empty;
 	m_CurrentPlayerPosition = newPosition;
 
-	int movementResult = MovementResult::MovedOnEmptyCell;
+	int movementResult = EMovementResult::MovedOnEmptyCell;
 
 	switch (objectOnNewPosition)
 	{
-	case LevelObjects::Empty:
+	case ELevelObjects::Empty:
 		break;
-	case LevelObjects::Explosive:
-		movementResult = MovementResult::MovedOnBomb;
+	case ELevelObjects::Explosive:
+		movementResult = EMovementResult::MovedOnBomb;
 		break;
-	case LevelObjects::LevelEnd:
-		movementResult = MovementResult::MovedOnLevelEnd;
+	case ELevelObjects::LevelEnd:
+		movementResult = EMovementResult::MovedOnLevelEnd;
 		break;
 	}
 	return movementResult;
@@ -116,25 +116,25 @@ int GameManager::MovePlayer(int movementDirection)
 
 }
 
-bool GameManager::ValidateMovement(int direction) const
+bool CGameManager::ValidateMovement(int direction) const
 {
 	// First of all we cant move outside of level boundaries even if there no any wall.
 	// For example, we cant move up, if current player row 0 or maximum row
 	if (
-		(m_CurrentPlayerPosition.row == 0 && direction == PlayerMovementDirection::Up)
-		|| (m_CurrentPlayerPosition.row == m_CurrentLevelMapRows && direction == PlayerMovementDirection::Down)
+		(m_CurrentPlayerPosition.row == 0 && direction == EPlayerMovementDirection::Up)
+		|| (m_CurrentPlayerPosition.row == m_CurrentLevelMapRows && direction == EPlayerMovementDirection::Down)
 		)
 		return false;
 
 	// In the same way handle side-movements
 	if (
-		(m_CurrentPlayerPosition.column == 0 && direction == PlayerMovementDirection::Left)
-		|| (m_CurrentPlayerPosition.column == m_CurrentLevelMapRows && direction == PlayerMovementDirection::Right)
+		(m_CurrentPlayerPosition.column == 0 && direction == EPlayerMovementDirection::Left)
+		|| (m_CurrentPlayerPosition.column == m_CurrentLevelMapRows && direction == EPlayerMovementDirection::Right)
 		)
 		return false;
 
 	// Now, we have to check if we moving at wall. If so - return false
-	if (GetLevelObjectAtPosition(CalculatePossiblePositionAfterMovement(direction)) == LevelObjects::Wall)
+	if (GetLevelObjectAtPosition(CalculatePossiblePositionAfterMovement(direction)) == ELevelObjects::Wall)
 	{
 		return false;
 	}
@@ -143,21 +143,21 @@ bool GameManager::ValidateMovement(int direction) const
 	return true;
 }
 
-Position GameManager::CalculatePossiblePositionAfterMovement(int movementDirection) const
+Position CGameManager::CalculatePossiblePositionAfterMovement(int movementDirection) const
 {
 	Position possibleNewPosition = m_CurrentPlayerPosition;
 	switch (movementDirection)
 	{
-	case PlayerMovementDirection::Down:
+	case EPlayerMovementDirection::Down:
 		possibleNewPosition.row += 1;
 		break;
-	case PlayerMovementDirection::Up:
+	case EPlayerMovementDirection::Up:
 		possibleNewPosition.row -= 1;
 		break;
-	case PlayerMovementDirection::Right:
+	case EPlayerMovementDirection::Right:
 		possibleNewPosition.column += 1;
 		break;
-	case PlayerMovementDirection::Left:
+	case EPlayerMovementDirection::Left:
 		possibleNewPosition.column -= 1;
 		break;
 
@@ -166,21 +166,21 @@ Position GameManager::CalculatePossiblePositionAfterMovement(int movementDirecti
 }
 
 // GameCycle methods
-void GameManager::NextLevel()
+void CGameManager::NextLevel()
 {
 	m_CurrentLevelNumber = (m_CurrentLevelNumber) % m_LevelsCount;
 	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber]);
 }
 
-void GameManager::ReloadCurrentLevel()
+void CGameManager::ReloadCurrentLevel()
 {
 	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber]);
 }
 
-void GameManager::ChangeGameState(int newState)
+void CGameManager::ChangeGameState(int newState)
 {
 	m_CurrentGameState = newState;
-	if (m_CurrentGameState == GameConditions::LostDueExplosion)
+	if (m_CurrentGameState == EGameConditions::LostDueExplosion)
 	{
 		ReloadCurrentLevel();
 	}
