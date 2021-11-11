@@ -201,11 +201,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             movementResult = gameManager->MovePlayer(EPlayerMovementDirection::Down);
             break;
         }
-#if GameDebug 1
+#if GAME_DEBUG 1
         // Debug cheat that proceeds to next level
         case VK_F2:
         {
             gameManager->NextLevel();
+            SetWindowTextA(hWnd, gameManager->GetLevelFilePath());
             break;
         }
         
