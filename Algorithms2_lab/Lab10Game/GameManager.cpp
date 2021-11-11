@@ -4,12 +4,15 @@
 
 const char* mlevelPaths[] = {
 
-#if GameDebug 1
+#if INCLUDE_DEBUG_LEVELS 1
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevel.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelEmpty.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBomb.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBombNextLevel.txt",
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBombSpawners.txt",
 #endif
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\playableLevel1.txt",
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\playableLevel2.txt"
 };
 
 //  Brushes for coloring each of gameObject
@@ -19,6 +22,7 @@ HBRUSH brushesForObjects[] = {
 	CreateSolidBrush(RGB(58,58,58)), // Wall - Gray
 	CreateSolidBrush(RGB(255,0,0)), // Explosive - Red
 	CreateSolidBrush(RGB(255,255,0)), // LevelEnd - Yellow
+	CreateSolidBrush(RGB(0,0,0)) // Bomb Spawner - black
 };
 
 void CGameManager::LoadLevel(int levelNumber, const char* levelFilePath)
@@ -33,9 +37,10 @@ void CGameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 	int openningError = fopen_s(&levelFilePtr, levelFilePath, "rt");
 	if (openningError)
 	{
-		exit(0);
+		exit(0x1337);
 		// TODO: handle file openning error
 	}
+	m_levelTextFilePath = levelFilePath;
 	// Read rows and columns count on current level
 	fscanf_s(levelFilePtr, "%d%d", &m_CurrentLevelMapRows, &m_CurrentLevelMapColumns);
 	
@@ -112,6 +117,21 @@ int CGameManager::MovePlayer(int movementDirection)
 	case ELevelObjects::LevelEnd:
 		movementResult = EMovementResult::MovedOnLevelEnd;
 		break;
+	case ELevelObjects::ExplosiveSpawner:
+		// cell next to cell player moved on
+		Position possibleBombPosition = CalculatePossiblePositionAfterMovement(movementDirection);
+		// Spawn bomb on possibleBombPosition if it's cooirdinates in boundaries of current level
+		
+		if (
+			possibleBombPosition.row >= 0 && possibleBombPosition.row <= m_CurrentLevelMapRows
+			&&
+			possibleBombPosition.column >= 0 && possibleBombPosition.column <= m_CurrentLevelMapColumns
+			)
+		{
+			SpawnBomb(possibleBombPosition);
+		}
+		break;
+
 	}
 	return movementResult;
 
@@ -131,7 +151,7 @@ bool CGameManager::ValidateMovement(int direction) const
 	// In the same way handle side-movements
 	if (
 		(m_CurrentPlayerPosition.column == 0 && direction == EPlayerMovementDirection::Left)
-		|| (m_CurrentPlayerPosition.column == m_CurrentLevelMapRows && direction == EPlayerMovementDirection::Right)
+		|| (m_CurrentPlayerPosition.column == m_CurrentLevelMapColumns && direction == EPlayerMovementDirection::Right)
 		)
 		return false;
 
@@ -167,6 +187,11 @@ Position CGameManager::CalculatePossiblePositionAfterMovement(int movementDirect
 	return possibleNewPosition;
 }
 
+void CGameManager::SpawnBomb(const Position& pos)
+{
+	m_CurrentLevelMapMatrix[pos.row - 1][pos.column - 1] = ELevelObjects::Explosive;
+}
+
 // GameCycle methods
 void CGameManager::NextLevel()
 {
@@ -179,6 +204,11 @@ void CGameManager::NextLevel()
 void CGameManager::ReloadCurrentLevel()
 {
 	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber - 1]);
+}
+
+const char* CGameManager::GetLevelFilePath()
+{
+	return m_levelTextFilePath;
 }
 
 void CGameManager::ChangeGameState(int newState)

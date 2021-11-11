@@ -4,10 +4,18 @@
 #include <Windows.h>
 
 
-#define GameDebug 1
+#ifdef _DEBUG
+#define GAME_DEBUG 1
+#define INCLUDE_DEBUG_LEVELS 0
+#endif
 
-#define PLAYABLE_LEVELS_COUNT 0
-#define DEBUGGING_LEVELS_COUNT 4
+#ifdef _GAMEPLAY_DEBUG
+#define GAME_DEBUG 1
+#define INCLUDE_DEBUG_LEVELS 1
+#endif
+
+#define PLAYABLE_LEVELS_COUNT 2
+#define DEBUGGING_LEVELS_COUNT 5
 
 const char* mlevelPaths[];
 HBRUSH brushesForObjects[];
@@ -19,7 +27,7 @@ enum EPlayerMovementDirection
 
 enum ELevelObjects
 {
-	Empty = 1, Player, Wall, Explosive, LevelEnd
+	Empty = 1, Player, Wall, Explosive, LevelEnd, ExplosiveSpawner
 };
 
 enum EGameConditions
@@ -58,11 +66,12 @@ public:
 	void NextLevel();
 
 	void ReloadCurrentLevel();
+	const char* GetLevelFilePath();
 
 private:
 	int GetLevelObjectAtPosition(const Position& pos) const;
 	Position CalculatePossiblePositionAfterMovement(int movementDirection) const;
-
+	void SpawnBomb(const Position& pos);
 	
 
 private:
@@ -78,9 +87,10 @@ private:
 	
 	// Current player position
 	Position m_CurrentPlayerPosition;
+	const char* m_levelTextFilePath;
 
 	// Levels Count
-#if GameDebug 1
+#if INCLUDE_DEBUG_LEVELS 1
 	int m_LevelsCount = PLAYABLE_LEVELS_COUNT + DEBUGGING_LEVELS_COUNT;
 #else
 	int m_LevelsCount = PLAYABLE_LEVELS_COUNT;
