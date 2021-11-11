@@ -85,39 +85,42 @@ namespace Utils {
             }
         }
     }
-
-    void MutateMatrixD(int& rows, int& columns, int matrixToMutate[100][100])
+    void MutateMatrix(int& rows, int& columns, int matrixToMutate[100][100])
     {
         Utils::Point minPoint = Point();
         Utils::Point maxPoint = Point();
 
         FindMaxAndMinElements(rows, columns, matrixToMutate, &maxPoint, &minPoint);
 
-        int newRowCount = 0;
-        
+        int newMatrixRowCounter = 0;
         for (int row = 0; row < rows; row++)
         {
-            int currentColumn = 0;
-            bool flagHasMinimal = false;
-            
+            bool skippedDueMinRow = false;
+            int newMatrixColumnCounter = 0;
             for (int column = 0; column < columns; column++)
             {
-                if ((row == minPoint.row && minPoint.column == column))
+                if (column == minPoint.column)
                 {
-                    flagHasMinimal = true;
+                    continue;
                 }
-                else
+                if (row == minPoint.row)
                 {
-                    currentColumn++;
+                    skippedDueMinRow = true;
+                    break;
                 }
+                matrixToMutate[newMatrixRowCounter][newMatrixColumnCounter] = matrixToMutate[row][column];
+                newMatrixColumnCounter++;
             }
-            if (!flagHasMinimal)
-                newRowCount++;
-        }
-        rows = rows - 1;
-        columns = columns - 1;
-    }
 
+            if (!skippedDueMinRow)
+            {
+                newMatrixRowCounter++;
+            }
+        }
+        rows -= 1;
+        columns -=1;
+
+    }
 }
 
 // Global Variables:
@@ -128,7 +131,6 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
-void DrawMatrix(int m, int n, const HDC& hdc, int  colors[100][100], int baseXOffset, int baseYOffset);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -272,7 +274,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             int baseYOffset = 100;
 
             Utils::DrawMatrix(rows, columns, hdc, matrix, baseXOffset, baseYOffset);
-            Utils::MutateMatrixD(rows, columns, matrix);
+            Utils::MutateMatrix(rows, columns, matrix);
             Utils::DrawMatrix(rows, columns, hdc, matrix, baseXOffset + 500, baseYOffset);
 
 
