@@ -17,7 +17,7 @@
 #define PLAYABLE_LEVELS_COUNT 2
 #define DEBUGGING_LEVELS_COUNT 5
 
-const char* mlevelPaths[];
+const char* pathsToLevelTextFiles[];
 HBRUSH brushesForObjects[];
 
 enum EPlayerMovementDirection

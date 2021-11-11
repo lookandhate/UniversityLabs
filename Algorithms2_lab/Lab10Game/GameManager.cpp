@@ -2,7 +2,7 @@
 #include <Windows.h>
 
 
-const char* mlevelPaths[] = {
+const char* pathsToLevelTextFiles[] = {
 
 #if INCLUDE_DEBUG_LEVELS 1
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevel.txt",
@@ -198,12 +198,12 @@ void CGameManager::NextLevel()
 	//m_CurrentLevelNumber = (m_CurrentLevelNumber + 1) % m_LevelsCount + 1;
 	m_CurrentLevelNumber = (m_CurrentLevelNumber + 1 <= m_LevelsCount) ? m_CurrentLevelNumber + 1 : (m_CurrentLevelNumber + 1) % m_LevelsCount;
 
-	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber - 1]);
+	LoadLevel(m_CurrentLevelNumber, pathsToLevelTextFiles[m_CurrentLevelNumber - 1]);
 }
 
 void CGameManager::ReloadCurrentLevel()
 {
-	LoadLevel(m_CurrentLevelNumber, mlevelPaths[m_CurrentLevelNumber - 1]);
+	LoadLevel(m_CurrentLevelNumber, pathsToLevelTextFiles[m_CurrentLevelNumber - 1]);
 }
 
 const char* CGameManager::GetLevelFilePath()

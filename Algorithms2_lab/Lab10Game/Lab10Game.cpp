@@ -135,7 +135,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
 
    // Load first level in init
-   gameManager->LoadLevel(1, mlevelPaths[0]);
+   gameManager->LoadLevel(1, pathsToLevelTextFiles[0]);
 
 
    ShowWindow(hWnd, nCmdShow);
