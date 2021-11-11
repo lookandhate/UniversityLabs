@@ -4,12 +4,14 @@
 
 const char* mlevelPaths[] = {
 
-#if GameDebug 1
+#if INCLUDE_DEBUG_LEVELS 1
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevel.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelEmpty.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBomb.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBombNextLevel.txt",
 #endif
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\playableLevel1.txt",
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\outsourceLevel.txt"
 };
 
 //  Brushes for coloring each of gameObject
@@ -33,7 +35,7 @@ void CGameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 	int openningError = fopen_s(&levelFilePtr, levelFilePath, "rt");
 	if (openningError)
 	{
-		exit(0);
+		exit(0x1337);
 		// TODO: handle file openning error
 	}
 	// Read rows and columns count on current level
@@ -131,7 +133,7 @@ bool CGameManager::ValidateMovement(int direction) const
 	// In the same way handle side-movements
 	if (
 		(m_CurrentPlayerPosition.column == 0 && direction == EPlayerMovementDirection::Left)
-		|| (m_CurrentPlayerPosition.column == m_CurrentLevelMapRows && direction == EPlayerMovementDirection::Right)
+		|| (m_CurrentPlayerPosition.column == m_CurrentLevelMapColumns && direction == EPlayerMovementDirection::Right)
 		)
 		return false;
 

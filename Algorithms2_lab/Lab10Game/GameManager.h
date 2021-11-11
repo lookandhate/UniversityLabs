@@ -4,9 +4,10 @@
 #include <Windows.h>
 
 
-#define GameDebug 1
+#define GAME_DEBUG 1
+#define INCLUDE_DEBUG_LEVELS 0
 
-#define PLAYABLE_LEVELS_COUNT 0
+#define PLAYABLE_LEVELS_COUNT 2
 #define DEBUGGING_LEVELS_COUNT 4
 
 const char* mlevelPaths[];
@@ -80,7 +81,7 @@ private:
 	Position m_CurrentPlayerPosition;
 
 	// Levels Count
-#if GameDebug 1
+#if INCLUDE_DEBUG_LEVELS 1
 	int m_LevelsCount = PLAYABLE_LEVELS_COUNT + DEBUGGING_LEVELS_COUNT;
 #else
 	int m_LevelsCount = PLAYABLE_LEVELS_COUNT;
