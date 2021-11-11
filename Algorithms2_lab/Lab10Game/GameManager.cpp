@@ -22,7 +22,7 @@ HBRUSH brushesForObjects[] = {
 	CreateSolidBrush(RGB(58,58,58)), // Wall - Gray
 	CreateSolidBrush(RGB(255,0,0)), // Explosive - Red
 	CreateSolidBrush(RGB(255,255,0)), // LevelEnd - Yellow
-	CreateSolidBrush(RGB(0,0,0)) // Bomb Spawner - black
+	CreateSolidBrush(RGB(0,255,255)) // Bomb Spawner - Cyan
 };
 
 void CGameManager::LoadLevel(int levelNumber, const char* levelFilePath)
@@ -46,6 +46,18 @@ void CGameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 	
 	// Read player start position
 	fscanf_s(levelFilePtr, "%d%d", &m_LevelPlayerStartPosition.row, &m_LevelPlayerStartPosition.column);
+
+	// Before allocation: check if memory was already allocated and free it
+	if (m_CurrentLevelMapMatrix)
+	{
+		for (int row = 0; row < m_CurrentLevelMapRows; row++)
+		{
+			if (m_CurrentLevelMapMatrix[row])
+				free(m_CurrentLevelMapMatrix[row]);
+		}
+		free(m_CurrentLevelMapMatrix);
+
+	}
 
 	// Allocating memory for level matrix
 
