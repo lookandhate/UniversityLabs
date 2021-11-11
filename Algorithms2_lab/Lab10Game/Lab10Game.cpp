@@ -206,6 +206,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case VK_F2:
         {
             gameManager->NextLevel();
+            SetWindowTextA(hWnd, gameManager->GetLevelFilePath());
             break;
         }
         
