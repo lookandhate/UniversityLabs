@@ -87,6 +87,8 @@ private:
 	
 	// Current player position
 	Position m_CurrentPlayerPosition;
+
+	// Path to level txt file
 	const char* m_levelTextFilePath;
 
 	// Levels Count

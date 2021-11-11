@@ -1,5 +1,40 @@
-// Lab10Game.cpp : Defines the entry point for the application.
+﻿// Lab10Game.cpp : Defines the entry point for the application.
 //
+//───────████████████████████
+//────████▀────────────────▀████
+//──███▀──────────────────────▀███
+//─██▀──────────────────────────▀██
+//█▀──────────────────────────────▀█
+//█────────────────────────────────█
+//█────────────────────────────────█
+//█────────────────────────────────█
+//█───█████────────────────█████───█
+//█──██▓▓▓███────────────███▓▓▓██──█
+//█──██▓▓▓▓▓██──────────██▓▓▓▓▓██──█
+//█──██▓▓▓▓▓▓██────────██▓▓▓▓▓▓██──█
+//█▄──████▓▓▓▓██──────██▓▓▓▓████──▄█
+//▀█▄───▀███▓▓▓██────██▓▓▓███▀───██▀
+//──█▄────▀█████▀────▀█████▀───▄█▀
+//─▄██──────────▄█─█▄──────────███▄
+//─███──────────██─██───────────███
+//─███──────────────────────────███
+//──▀██──██▀██──█──█──█──██▀██──██▀
+//────▀███▀─██──█──█──█──██──████▀
+//─────▀█▀──██──█──█──█──██──▀██▀
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//──────────██──█──█──█──██
+//───────────█▄▄█▄▄█▄▄█▄▄█
+// ALL RIGHTS ARE TRASHED 
 
 #include "framework.h"
 #include "Lab10Game.h"
@@ -19,6 +54,36 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+
+
+CGameManager* gameManager = new CGameManager();
+
+
+namespace DrawingUtils {
+
+
+    void DrawLevelMatrixOnScreen(int rows, int columns, const HDC& hdc, int** matrixToDraw)
+    {
+        int baseXOffset = 100;
+        int baseYOffset = 100;
+        for (int row = 0; row < rows; row++)
+        {
+            for (int column = 0; column < columns; column++)
+            {
+
+                SelectObject(hdc, brushesForObjects[matrixToDraw[row][column] - 1]);
+
+                Rectangle(hdc, (column * 40) + baseXOffset, // x left
+                    row * 40 + baseYOffset, //y top
+                    (column + 1) * 40 + baseXOffset, //x right
+                    (row + 1) * 40 + baseYOffset //y bottom
+                );
+            }
+        }
+    }
+}
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -58,33 +123,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     return (int) msg.wParam;
 }
 
-
-CGameManager* gameManager = new CGameManager();
-
-
-namespace DrawingUtils {
-
-
-    void DrawLevelMatrixOnScreen(int rows, int columns, const HDC& hdc, int** matrixToDraw)
-    {
-        int baseXOffset = 100;
-        int baseYOffset = 100;
-        for (int row = 0; row < rows; row++)
-        {
-            for (int column = 0; column < columns; column++)
-            {
-                
-                SelectObject(hdc, brushesForObjects[matrixToDraw[row][column] - 1]);
-
-                Rectangle(hdc, (column * 40) + baseXOffset, // x left
-                    row * 40 + baseYOffset, //y top
-                    (column + 1) * 40 + baseXOffset, //x right
-                    (row + 1) * 40 + baseYOffset //y bottom
-                );
-            }
-        }
-    }
-}
 
 //
 //  FUNCTION: MyRegisterClass()
@@ -210,6 +248,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         }
         
+        // Debug cheat that restart current level 
         case VK_F3:
         {
             gameManager->ReloadCurrentLevel();
