@@ -85,12 +85,7 @@ void CGameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 	// Before allocation: check if memory was already allocated and free it
 	if (m_CurrentLevelMapMatrix)
 	{
-		for (int row = 0; row < m_CurrentLevelMapRows; row++)
-		{
-			if (m_CurrentLevelMapMatrix[row])
-				free(m_CurrentLevelMapMatrix[row]);
-		}
-		free(m_CurrentLevelMapMatrix);
+		CleanUpLevelMatrix();
 
 	}
 
@@ -141,6 +136,12 @@ int** CGameManager::GetLevelMatrixPointer()
 const char* CGameManager::GetLevelFilePath()
 {
 	return m_levelTextFilePath;
+}
+
+CGameManager::~CGameManager()
+{
+	if (m_CurrentLevelMapMatrix)
+		CleanUpLevelMatrix();
 }
 
 
@@ -243,6 +244,16 @@ Position CGameManager::CalculatePossiblePositionAfterMovement(int movementDirect
 void CGameManager::SpawnBomb(const Position& pos)
 {
 	m_CurrentLevelMapMatrix[pos.row - 1][pos.column - 1] = ELevelObjects::Explosive;
+}
+
+void CGameManager::CleanUpLevelMatrix()
+{
+	for (int row = 0; row < m_CurrentLevelMapRows; row++)
+	{
+		if (m_CurrentLevelMapMatrix[row])
+			free(m_CurrentLevelMapMatrix[row]);
+	}
+	free(m_CurrentLevelMapMatrix);
 }
 
 // GameCycle methods

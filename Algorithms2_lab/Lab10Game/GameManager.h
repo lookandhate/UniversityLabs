@@ -68,10 +68,13 @@ public:
 	void ReloadCurrentLevel();
 	const char* GetLevelFilePath();
 
+	~CGameManager();
+
 private:
 	int GetLevelObjectAtPosition(const Position& pos) const;
 	Position CalculatePossiblePositionAfterMovement(int movementDirection) const;
 	void SpawnBomb(const Position& pos);
+	void CleanUpLevelMatrix();
 	
 
 private:
