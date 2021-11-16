@@ -58,7 +58,15 @@ HBRUSH brushesForObjects[] = {
 	CreateSolidBrush(RGB(58,58,58)), // Wall - Gray
 	CreateSolidBrush(RGB(255,0,0)), // Explosive - Red
 	CreateSolidBrush(RGB(255,255,0)), // LevelEnd - Yellow
-	CreateSolidBrush(RGB(0,255,255)) // Bomb Spawner - Cyan
+	CreateSolidBrush(RGB(0,255,255)), // Bomb Spawner - Cyan
+#ifdef GAME_DEBUG 1
+	CreateSolidBrush(RGB(0,0,0)) // BombThatDestroysWallNextToIt -  Black(only in gameplaydebug builds)
+#else
+	CreateSolidBrush(RGB(0,255,255)) // BombThatDestroysWallNextToIt  - Cyan(in non gameplaydebug builds)
+
+#endif // GAME_DEBUG
+
+
 };
 
 void CGameManager::LoadLevel(int levelNumber, const char* levelFilePath)

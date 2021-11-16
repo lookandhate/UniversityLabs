@@ -27,7 +27,7 @@ enum EPlayerMovementDirection
 
 enum ELevelObjects
 {
-	Empty = 1, Player, Wall, Explosive, LevelEnd, ExplosiveSpawner
+	Empty = 1, Player, Wall, Explosive, LevelEnd, ExplosiveSpawner, BombThatDestroysBlockNextToIt
 };
 
 enum EGameConditions
