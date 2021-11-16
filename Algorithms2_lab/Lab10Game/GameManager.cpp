@@ -40,10 +40,8 @@
 const char* pathsToLevelTextFiles[] = {
 
 #if INCLUDE_DEBUG_LEVELS 1
-<<<<<<< HEAD
 	//"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugBombDestroysObjects.txt",
-=======
->>>>>>> parent of eb1e16d (Some changes in 11 and 10 labs)
+
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevel.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelEmpty.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBomb.txt",
@@ -344,12 +342,11 @@ void CGameManager::CleanUpLevelMatrix()
 		return;
 	for (int row = 0; row < m_CurrentLevelMapRows; row++)
 	{
-		if (m_CurrentLevelMapMatrix[row])
+		if (m_CurrentLevelMapMatrix && m_CurrentLevelMapMatrix[row] )
 			free(m_CurrentLevelMapMatrix[row]);
 	}
 	free(m_CurrentLevelMapMatrix);
 }
-
 CGameManager::~CGameManager()
 {
 	if (m_CurrentLevelMapMatrix)

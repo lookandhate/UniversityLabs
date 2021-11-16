@@ -84,7 +84,7 @@ private:
 	int m_CurrentLevelNumber = 1;
 	int m_CurrentLevelMapRows;
 	int m_CurrentLevelMapColumns;
-	int** m_CurrentLevelMapMatrix =nullptr;
+	int** m_CurrentLevelMapMatrix;
 	
 	// Player start position on current level
 	Position m_LevelPlayerStartPosition;
