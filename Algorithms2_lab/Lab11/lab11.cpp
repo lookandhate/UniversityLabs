@@ -26,13 +26,13 @@ void readDataFromTextFile(const char* textFilePath,char** &buffer, int& bufferSi
 	int openningError = fopen_s(&inputFilePtr, textFilePath, "rt");
 	if (openningError)
 	{
-		printf("Could not open text file\n");
+		printf("Could not open text file! Error code %d\n", openningError);
 		exit(0x1337);
 		// TODO: handle file openning error
 	}
 
 	int currentIndexOfArrayWritingTo = 0;
-	while ( !feof(inputFilePtr))
+	while (!feof(inputFilePtr))
 	{
 		// Check if string allocated( Actually its always gonna be true, 
 		// cuz compiler sets pointer to point on random address.
@@ -85,8 +85,14 @@ int main()
 	}
 	
 	FILE* outputFilePtr;
-	fopen_s(&outputFilePtr, "C:\\Users\\root\\Desktop\\labs\\testTextFiles\\lab11\\output.html", "wt");
-	
+	int outputFileOpenError = fopen_s(&outputFilePtr, "C:\\Users\\root\\Desktop\\labs\\testTextFiles\\lab11\\output.html", "wt");
+	if (outputFileOpenError)
+	{
+		printf("Could not open text file for writing output data! Error code %d\n", outputFileOpenError);
+		exit(0x1337);
+		// TODO: handle file openning error
+	}
+
 	fprintf(outputFilePtr, "<HTML>\n\t<HEAD>\n\t\t<TITLE>%s</TITLE>\n\t</HEAD>\n", buffer[0]);
 	fprintf(outputFilePtr, "\t<BODY>\n");
 	fprintf(outputFilePtr, "\t\t<H1>%s</H1>\n", buffer[0]);
