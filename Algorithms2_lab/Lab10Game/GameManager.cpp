@@ -40,15 +40,17 @@
 const char* pathsToLevelTextFiles[] = {
 
 #if INCLUDE_DEBUG_LEVELS 1
-	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\playableLevel3indev.txt",
+	//"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugBombDestroysObjects.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevel.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelEmpty.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBomb.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBombNextLevel.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBombSpawners.txt",
+
 #endif
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\playableLevel1.txt",
-	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\playableLevel2.txt"
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\playableLevel2.txt",
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\playableLevel3indev.txt"
 };
 
 //  Brushes for coloring each of gameObject
@@ -94,7 +96,9 @@ void CGameManager::LoadLevel(int levelNumber, const char* levelFilePath)
 	// Before allocation: check if memory was already allocated and free it
 	if (m_CurrentLevelMapMatrix)
 	{
-		CleanUpLevelMatrix();
+		// TODO: FOr some weird reason, we are faling to free memory sometime(pointer already pointing to some nonsense)
+		// Find a way to fix it.
+		//CleanUpLevelMatrix();
 
 	}
 
@@ -147,11 +151,6 @@ const char* CGameManager::GetLevelFilePath()
 	return m_levelTextFilePath;
 }
 
-CGameManager::~CGameManager()
-{
-	if (m_CurrentLevelMapMatrix)
-		CleanUpLevelMatrix();
-}
 
 
 // Movement functionallity
@@ -183,7 +182,7 @@ int CGameManager::MovePlayer(int movementDirection)
 	case ELevelObjects::ExplosiveSpawner:
 		// cell next to cell player moved on
 		Position possibleBombPosition = CalculatePossiblePositionAfterMovement(movementDirection);
-		// Spawn bomb on possibleBombPosition if it's cooirdinates in boundaries of current level
+		// Spawn bomb on wallToDestroyPosition if it's cooirdinates in boundaries of current level
 		
 		if (
 			possibleBombPosition.row >= 0 && possibleBombPosition.row <= m_CurrentLevelMapRows
@@ -193,8 +192,50 @@ int CGameManager::MovePlayer(int movementDirection)
 		{
 			SpawnBomb(possibleBombPosition);
 		}
+
 		break;
 
+	case ELevelObjects::BombThatDestroysBlocksNearIt:
+		// cell next to cell player moved on
+		Position wallToDestroyPosition = CalculatePossiblePositionAfterMovement(movementDirection);
+		// Get all block that will be exploded by the bomb
+
+		// |W| |W| |W|
+		// |W| |B| |W|
+		// |W| |W| |W|
+
+		// After B explodes this field will look like
+		// |E| |E| |E|
+		// |E| |E| |E|
+		// |E| |E| |E|
+
+		// Where E - empty cell
+		// B - cell with ELevelObjects::BombThatDestroysBlocksNearIt
+		// W - wall
+
+		// So, the bomb has (2;2) Coordinates. And we will update:
+		// (1;1), (1; 2) (1; 3)
+		// (2;1), (2; 2) (2; 3)
+		// (3;1), (3; 2) (3; 3)
+
+		// OR 
+
+		// (-1;-1), (-1; 0) (-1; 1)
+		// (0;-1),  (0; 0)  (0; 1)
+		// (1;-1),   (1; 0)  (1; 1) // If we take bomb initial position as root of coordinate system
+
+
+
+		for(int i = -1; i <=1;i++ )
+			for (int j = -1; j <= 1; j++)
+			{
+				Position objectToDestroyCoordinates = {
+					m_CurrentPlayerPosition.row + i, m_CurrentPlayerPosition.column + j
+				};
+				DestroyWall(objectToDestroyCoordinates);
+			}
+
+		
 	}
 	return movementResult;
 
@@ -250,20 +291,6 @@ Position CGameManager::CalculatePossiblePositionAfterMovement(int movementDirect
 	return possibleNewPosition;
 }
 
-void CGameManager::SpawnBomb(const Position& pos)
-{
-	m_CurrentLevelMapMatrix[pos.row - 1][pos.column - 1] = ELevelObjects::Explosive;
-}
-
-void CGameManager::CleanUpLevelMatrix()
-{
-	for (int row = 0; row < m_CurrentLevelMapRows; row++)
-	{
-		if (m_CurrentLevelMapMatrix[row])
-			free(m_CurrentLevelMapMatrix[row]);
-	}
-	free(m_CurrentLevelMapMatrix);
-}
 
 // GameCycle methods
 void CGameManager::NextLevel()
@@ -294,3 +321,34 @@ void CGameManager::ChangeGameState(int newState)
 	}
 }
 
+
+// Gameplay helpers
+void CGameManager::SpawnBomb(const Position& pos)
+{
+	m_CurrentLevelMapMatrix[pos.row - 1][pos.column - 1] = ELevelObjects::Explosive;
+}
+void CGameManager::DestroyWall(const Position& pos)
+{
+	if(!(GetLevelObjectAtPosition(pos) == ELevelObjects::Player))
+		m_CurrentLevelMapMatrix[pos.row - 1][pos.column - 1] = ELevelObjects::Empty;
+}
+
+
+// InternalState handlers
+void CGameManager::CleanUpLevelMatrix()
+{
+	if (!m_CurrentLevelMapMatrix)
+		return;
+	for (int row = 0; row < m_CurrentLevelMapRows; row++)
+	{
+		if (m_CurrentLevelMapMatrix[row])
+			free(m_CurrentLevelMapMatrix[row]);
+	}
+	free(m_CurrentLevelMapMatrix);
+}
+
+CGameManager::~CGameManager()
+{
+	if (m_CurrentLevelMapMatrix)
+		CleanUpLevelMatrix();
+}

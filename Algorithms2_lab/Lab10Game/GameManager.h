@@ -14,7 +14,7 @@
 #define INCLUDE_DEBUG_LEVELS 1
 #endif
 
-#define PLAYABLE_LEVELS_COUNT 2
+#define PLAYABLE_LEVELS_COUNT 3
 #define DEBUGGING_LEVELS_COUNT 5
 
 const char* pathsToLevelTextFiles[];
@@ -27,7 +27,7 @@ enum EPlayerMovementDirection
 
 enum ELevelObjects
 {
-	Empty = 1, Player, Wall, Explosive, LevelEnd, ExplosiveSpawner, BombThatDestroysBlockNextToIt
+	Empty = 1, Player, Wall, Explosive, LevelEnd, ExplosiveSpawner, BombThatDestroysBlocksNearIt
 };
 
 enum EGameConditions
@@ -75,6 +75,7 @@ private:
 	Position CalculatePossiblePositionAfterMovement(int movementDirection) const;
 	void SpawnBomb(const Position& pos);
 	void CleanUpLevelMatrix();
+	void DestroyWall(const Position& pos);
 	
 
 private:
@@ -83,7 +84,7 @@ private:
 	int m_CurrentLevelNumber = 1;
 	int m_CurrentLevelMapRows;
 	int m_CurrentLevelMapColumns;
-	int** m_CurrentLevelMapMatrix;
+	int** m_CurrentLevelMapMatrix =nullptr;
 	
 	// Player start position on current level
 	Position m_LevelPlayerStartPosition;
