@@ -77,7 +77,7 @@ int main()
 		// Here changing all string with 'A' in it to <i><b>NOP</b></i>
 		if (isAInString(buffer[i]))
 		{
-			strcpy(buffer[i], boldNOPWord);
+			lh_strcpy(buffer[i], boldNOPWord);
 		}
 
 		// Removes /n from the end of string(buffer[i])

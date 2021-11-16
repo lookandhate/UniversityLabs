@@ -40,6 +40,7 @@
 const char* pathsToLevelTextFiles[] = {
 
 #if INCLUDE_DEBUG_LEVELS 1
+	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\playableLevel3indev.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevel.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelEmpty.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBomb.txt",
