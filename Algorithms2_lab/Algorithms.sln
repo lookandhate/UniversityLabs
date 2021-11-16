@@ -13,6 +13,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab10Game", "Lab10Game\Lab1
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab11", "Lab11\Lab11.vcxproj", "{A5D54FD7-3A65-4409-B1F7-14881B6F63BB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab12Encryptor", "Lab12Decryptor\Lab12Decryptor.vcxproj", "{A2E06AB1-DD35-42DC-8445-112D0DEEF489}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab12DecryptorAndDrawer", "Lab12DecryptorAndDrawer\Lab12DecryptorAndDrawer.vcxproj", "{32947294-FC9B-47F4-ABAB-D907042F1D57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -83,6 +87,30 @@ Global
 		{A5D54FD7-3A65-4409-B1F7-14881B6F63BB}.Release|x64.Build.0 = Release|x64
 		{A5D54FD7-3A65-4409-B1F7-14881B6F63BB}.Release|x86.ActiveCfg = Release|Win32
 		{A5D54FD7-3A65-4409-B1F7-14881B6F63BB}.Release|x86.Build.0 = Release|Win32
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.Debug|x64.ActiveCfg = Debug|x64
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.Debug|x64.Build.0 = Debug|x64
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.Debug|x86.ActiveCfg = Debug|Win32
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.Debug|x86.Build.0 = Debug|Win32
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.GameDebug|x64.ActiveCfg = Debug|x64
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.GameDebug|x64.Build.0 = Debug|x64
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.GameDebug|x86.ActiveCfg = Debug|Win32
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.GameDebug|x86.Build.0 = Debug|Win32
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.Release|x64.ActiveCfg = Release|x64
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.Release|x64.Build.0 = Release|x64
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.Release|x86.ActiveCfg = Release|Win32
+		{A2E06AB1-DD35-42DC-8445-112D0DEEF489}.Release|x86.Build.0 = Release|Win32
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.Debug|x64.ActiveCfg = Debug|x64
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.Debug|x64.Build.0 = Debug|x64
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.Debug|x86.ActiveCfg = Debug|Win32
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.Debug|x86.Build.0 = Debug|Win32
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.GameDebug|x64.ActiveCfg = Debug|x64
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.GameDebug|x64.Build.0 = Debug|x64
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.GameDebug|x86.ActiveCfg = Debug|Win32
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.GameDebug|x86.Build.0 = Debug|Win32
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.Release|x64.ActiveCfg = Release|x64
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.Release|x64.Build.0 = Release|x64
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.Release|x86.ActiveCfg = Release|Win32
+		{32947294-FC9B-47F4-ABAB-D907042F1D57}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
