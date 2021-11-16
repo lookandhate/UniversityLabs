@@ -40,7 +40,10 @@
 const char* pathsToLevelTextFiles[] = {
 
 #if INCLUDE_DEBUG_LEVELS 1
+<<<<<<< HEAD
 	//"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugBombDestroysObjects.txt",
+=======
+>>>>>>> parent of eb1e16d (Some changes in 11 and 10 labs)
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevel.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelEmpty.txt",
 	"C:\\Users\\root\\Desktop\\labs\\testTextFiles\\Lab10\\debugLevelBomb.txt",
