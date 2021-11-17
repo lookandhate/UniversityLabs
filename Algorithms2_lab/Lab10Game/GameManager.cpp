@@ -342,10 +342,14 @@ void CGameManager::CleanUpLevelMatrix()
 		return;
 	for (int row = 0; row < m_CurrentLevelMapRows; row++)
 	{
-		if (m_CurrentLevelMapMatrix && m_CurrentLevelMapMatrix[row] )
+		if (m_CurrentLevelMapMatrix && m_CurrentLevelMapMatrix[row])
+		{
 			free(m_CurrentLevelMapMatrix[row]);
+			m_CurrentLevelMapMatrix[row] = nullptr;
+		}
 	}
 	free(m_CurrentLevelMapMatrix);
+	m_CurrentLevelMapMatrix = nullptr;
 }
 CGameManager::~CGameManager()
 {
