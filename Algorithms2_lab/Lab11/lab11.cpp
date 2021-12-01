@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
 #include <cassert>
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -71,15 +70,33 @@ int main()
 	readDataFromTextFile("C:\\Users\\root\\Desktop\\labs\\testTextFiles\\lab11\\testReadData.txt",
 		buffer, bufferTrueSize);
 	
-
 	for (size_t i = 0; i < bufferTrueSize; i++)
 	{
-		// Here changing all string with 'A' in it to <i><b>NOP</b></i>
-		if (isAInString(buffer[i]))
+		printf("buffer[%d] = %s\n", i, buffer[i]);
+		
+		char* copyOfCurrentString = (char*)malloc(sizeof(char*) * 255);
+		char* newString = (char*)malloc(sizeof(char*) * 255);
+		strcpy(newString, "\0");
+		strcpy(copyOfCurrentString, buffer[i]);
+		
+		char* token = strtok(copyOfCurrentString, " ");
+		while (token != NULL)
 		{
-			strcpy(buffer[i], boldNOPWord);
+			printf("\t token = %s; buffer[%d] is %s\n", token, i, buffer[i]);
+			if (isAInString(token))
+			{
+				strcat(newString, boldNOPWord);
+				strcat(newString, " ");
+			}
+			else
+			{
+				strcat(newString, token);
+				strcat(newString, " ");
+			}
+			token = strtok(NULL, " ");
 		}
 
+		strcpy(buffer[i], newString);
 		// Removes /n from the end of string(buffer[i])
 		buffer[i][strcspn(buffer[i], "\n")] = 0;
 	}

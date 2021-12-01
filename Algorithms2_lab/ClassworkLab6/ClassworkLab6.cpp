@@ -11,12 +11,15 @@
 #define X_LENGHT_OF_COLUMN 50 // Длина линии на оси oX для столбца
 #define BOTTOM_Y_FOR_COLUMN 300 // Кооридната 
 
-#define PATH_TO_FILE "C:\\Users\\root\\Desktop\\test.txt"
+#define PATH_TO_FILE "C:\\Users\\root\\Desktop\\labs\\testTextFiles\\lab6.txt"
 
 // Глобальные переменные:
 int arraySize;
 int arrayOfDigits[255];
 int modificatedArray[255];
+
+bool bSourceDiagramDrawed = false;
+bool bModifiedDiagramDrawed = false;
 
 HINSTANCE hInst;                                // текущий экземпляр
 WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки заголовка
@@ -67,7 +70,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 }
 
 
-
 void DrawColumn(HDC& hdc,int bottomRightX, int height, int startY)
 {
     Rectangle(hdc, bottomRightX - X_LENGHT_OF_COLUMN, startY - height, bottomRightX, startY);
@@ -110,6 +112,32 @@ void DrawDiagram(HDC& hdc, size_t arraySize, int arrayToDraw[], int startY)
         DebugBreak();
     };
 }
+
+void FindMinAndMax(size_t arraySize, int arrayToModificate[],
+    int* maxElementPtr, int* minElementPtr,
+    int* maxElementIndexPtr, int* minElementIndexPtr)
+{
+    *maxElementIndexPtr = 0;
+    *minElementIndexPtr = 0;
+    *maxElementPtr = arrayToModificate[0];
+    *minElementPtr = arrayToModificate[0];
+    for (int i = 0; i < arraySize; i++)
+    {
+        if (*maxElementPtr < arrayToModificate[i])
+        {
+            *maxElementPtr = arrayToModificate[i];
+            *maxElementIndexPtr = i;
+        }
+
+        if (*minElementPtr > arrayToModificate[i])
+        {
+            *minElementPtr = arrayToModificate[i];
+            *minElementIndexPtr = i;
+        }
+    }
+}
+
+
 
 //
 //  ФУНКЦИЯ: MyRegisterClass()
@@ -227,12 +255,58 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             //DrawColumn(hdc, 100, 100);
             
-            // Draw diagram with normal values
-            DrawDiagram(hdc, arraySize, arrayOfDigits, 150);
+            if (!bSourceDiagramDrawed)
+            {
+                // Draw diagram with normal values
+                DrawDiagram(hdc, arraySize, arrayOfDigits, 150);
+                bSourceDiagramDrawed = true;
+            }
             
-            // Draw diagram with modified values below normal diagram
-            DrawDiagram(hdc, arraySize, modificatedArray, 400);
-            EndPaint(hWnd, &ps);
+            if (!bModifiedDiagramDrawed)
+            {
+                bModifiedDiagramDrawed = true;
+                // Modifying array here below
+                int minIndex, maxIndex, minValue, maxValue = 0;
+                FindMinAndMax(arraySize, arrayOfDigits, &maxValue, &minValue, &maxIndex, &minIndex);
+
+                int leftBorder;
+                int rightBorder;
+                if (maxIndex > minIndex)
+                {
+                    rightBorder = maxIndex;
+                    leftBorder = minIndex;
+                }
+                else
+                {
+                    rightBorder = minIndex;
+                    leftBorder = maxIndex;
+                }
+
+                int newSize = 0;
+                for (int i = 0; i < arraySize; i++)
+                {
+                    // row not in [leftBorder;rightBorder] -> saving all elements
+                    if (i <= leftBorder || i >= rightBorder)
+                    {
+                        arrayOfDigits[newSize] = arrayOfDigits[i];
+                        newSize++;
+                    }
+                    else
+                    {
+                        if (arrayOfDigits[i] % 2 != 0)
+                        {
+                            arrayOfDigits[newSize] = arrayOfDigits[i];
+                            newSize++;
+                        }
+                    }
+                }
+
+
+                // Draw diagram with modified values below normal diagram
+                DrawDiagram(hdc, newSize, arrayOfDigits, 400);
+                EndPaint(hWnd, &ps);
+            }
+
         }
         break;
     case WM_DESTROY:

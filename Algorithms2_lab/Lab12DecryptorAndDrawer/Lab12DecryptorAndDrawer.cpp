@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#pragma warning(disable:4996)
 #define MAX_LOADSTRING 100
 
 
@@ -69,8 +70,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     return (int) msg.wParam;
 }
 
-LabelData labelToDraw;
-
+LabelData* labelsToDraw;
+int labels;
 //
 //  FUNCTION: MyRegisterClass()
 //
@@ -117,8 +118,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    // read data from binary file
    FILE* inputBinaryFilePtr;
    inputBinaryFilePtr = fopen("C:\\Users\\root\\Desktop\\labs\\testTextFiles\\lab12\\file.bin", "rb");
-   fread(&labelToDraw, sizeof(LabelData), 1, f);
 
+   fread(&labels, sizeof(int), 1, inputBinaryFilePtr);
+   labelsToDraw = (LabelData*)malloc(sizeof(LabelData) * labels);
+   for (int i = 0; i < labels; i++)
+   {
+       fread(&labelsToDraw[i], sizeof(LabelData), 1, inputBinaryFilePtr);
+   }
+
+   fclose(inputBinaryFilePtr);
 
    if (!hWnd)
    {
@@ -167,7 +175,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
-
+            for (int i = 0; i < labels; i++)
+            {
+                SetTextColor(hdc, RGB(labelsToDraw[i].colorRedRate, labelsToDraw[i].colorGreenRate, labelsToDraw[i].colorBlueRate));
+                SelectObject(hdc, CreateFont(labelsToDraw[i].fontSize, labelsToDraw[i].fontSize, NULL, NULL, FW_NORMAL, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS, ANTIALIASED_QUALITY, FF_DONTCARE, NULL));
+                
+                
+                //HPEN brush = CreatePen(1, labelsToDraw[i].fontSize, RGB(labelsToDraw[i].colorRedRate, labelsToDraw[i].colorGreenRate, labelsToDraw[i].colorBlueRate));
+                //SelectObject(hdc, brush);
+                TextOutA(hdc, labelsToDraw[i].posX, labelsToDraw[i].posY, labelsToDraw[i].labelString,
+                   strlen(labelsToDraw[i].labelString)
+                );
+            }
             EndPaint(hWnd, &ps);
         }
         break;

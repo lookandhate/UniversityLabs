@@ -1,0 +1,8 @@
+this is gonna be in title 
+and this is will be replaced with NOP cuz of big A 
+and this is just a string
+A
+AA
+AAA
+AAAA
+A B A B
