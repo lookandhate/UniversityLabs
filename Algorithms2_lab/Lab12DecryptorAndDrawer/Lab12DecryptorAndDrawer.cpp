@@ -178,11 +178,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             for (int i = 0; i < labels; i++)
             {
                 SetTextColor(hdc, RGB(labelsToDraw[i].colorRedRate, labelsToDraw[i].colorGreenRate, labelsToDraw[i].colorBlueRate));
-                SelectObject(hdc, CreateFont(labelsToDraw[i].fontSize, labelsToDraw[i].fontSize, NULL, NULL, FW_NORMAL, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS, ANTIALIASED_QUALITY, FF_DONTCARE, NULL));
-                
-                
-                //HPEN brush = CreatePen(1, labelsToDraw[i].fontSize, RGB(labelsToDraw[i].colorRedRate, labelsToDraw[i].colorGreenRate, labelsToDraw[i].colorBlueRate));
-                //SelectObject(hdc, brush);
+                SelectObject(hdc, CreateFont(labelsToDraw[i].fontSize, 0, NULL, NULL, FW_NORMAL, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS, ANTIALIASED_QUALITY, FF_DONTCARE, NULL));
                 TextOutA(hdc, labelsToDraw[i].posX, labelsToDraw[i].posY, labelsToDraw[i].labelString,
                    strlen(labelsToDraw[i].labelString)
                 );
