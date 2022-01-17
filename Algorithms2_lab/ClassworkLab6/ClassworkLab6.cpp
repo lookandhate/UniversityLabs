@@ -185,20 +185,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
     for (int i = 0; i < arraySize; i++) {
         fscanf_s(f, "%d", &arrayOfDigits[i]);
+        modificatedArray[i] = arrayOfDigits[i];
     }
     
-
-    // Create modificated array
-
-    for (int i = 0; i < arraySize; i++) {
-        if (arrayOfDigits[i] % 2 == 0)
-        {
-            modificatedArray[i] = arrayOfDigits[i] * -1;
-        }
-        else
-            modificatedArray[i] = arrayOfDigits[i];
-    }
-
 
    hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
 
@@ -255,14 +244,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             //DrawColumn(hdc, 100, 100);
             
-            if (!bSourceDiagramDrawed)
+            if (!bSourceDiagramDrawed || true)
             {
                 // Draw diagram with normal values
                 DrawDiagram(hdc, arraySize, arrayOfDigits, 150);
                 bSourceDiagramDrawed = true;
             }
             
-            if (!bModifiedDiagramDrawed)
+            if (!bModifiedDiagramDrawed || true)
             {
                 bModifiedDiagramDrawed = true;
                 // Modifying array here below
@@ -288,14 +277,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     // row not in [leftBorder;rightBorder] -> saving all elements
                     if (i <= leftBorder || i >= rightBorder)
                     {
-                        arrayOfDigits[newSize] = arrayOfDigits[i];
+                        modificatedArray[newSize] = arrayOfDigits[i];
                         newSize++;
                     }
                     else
                     {
                         if (arrayOfDigits[i] % 2 != 0)
                         {
-                            arrayOfDigits[newSize] = arrayOfDigits[i];
+                            modificatedArray[newSize] = arrayOfDigits[i];
                             newSize++;
                         }
                     }
@@ -303,7 +292,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
                 // Draw diagram with modified values below normal diagram
-                DrawDiagram(hdc, newSize, arrayOfDigits, 400);
+                DrawDiagram(hdc, newSize, modificatedArray, 400);
                 EndPaint(hWnd, &ps);
             }
 
