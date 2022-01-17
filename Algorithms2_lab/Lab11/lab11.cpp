@@ -2,13 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <cassert>
-
-#define _CRT_SECURE_NO_WARNINGS
-
-#define INPUT_FILE "E:\\ULSTU\\Programming and algorithms\\testTextFiles\\lab11\\testReadData.txt"
-#define OUTPUT_HTML_DOC "E:\\ULSTU\\Programming and algorithms\\testTextFiles\\lab11\\output.html"
 #pragma warning(disable:4996)
 
+#define _CRT_SECURE_NO_WARNINGS
+#define INPUT_FILE "E:\\ULSTU\\Programming and algorithms\\testTextFiles\\lab11\\testReadData.txt"
+#define OUTPUT_HTML_DOC "E:\\ULSTU\\Programming and algorithms\\testTextFiles\\lab11\\output.html"
 
 
 void readDataFromTextFile(const char* textFilePath, char**& buffer, int& bufferSize)
