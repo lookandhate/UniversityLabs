@@ -4,12 +4,7 @@
 #include <cassert>
 
 #define _CRT_SECURE_NO_WARNINGS
-
-#define INPUT_FILE "E:\\ULSTU\\Programming and algorithms\\testTextFiles\\lab11\\testReadData.txt"
-#define OUTPUT_HTML_DOC "E:\\ULSTU\\Programming and algorithms\\testTextFiles\\lab11\\output.html"
 #pragma warning(disable:4996)
-
-
 
 void readDataFromTextFile(const char* textFilePath,char** &buffer, int& bufferSize)
 {
@@ -72,7 +67,7 @@ int main()
 	const char* boldNOPWord = "<i><b>NOP</b></i>";
 
 	int bufferTrueSize = 0;
-	readDataFromTextFile(INPUT_FILE,
+	readDataFromTextFile("C:\\Users\\root\\Desktop\\labs\\testTextFiles\\lab11\\testReadData.txt",
 		buffer, bufferTrueSize);
 	
 	for (size_t i = 0; i < bufferTrueSize; i++)
@@ -87,16 +82,14 @@ int main()
 		char* token = strtok(copyOfCurrentString, " ");
 		while (token != NULL)
 		{
-			printf("\t token = %s;\n", token);
+			printf("\t token = %s; buffer[%d] is %s\n", token, i, buffer[i]);
 			if (isAInString(token))
 			{
-				printf("\t there is a A in the string, replacing it's with a NOP\n\n");
 				strcat(newString, boldNOPWord);
 				strcat(newString, " ");
 			}
 			else
 			{
-				printf("\t there are no As in the string -> not doing anything\n\n");
 				strcat(newString, token);
 				strcat(newString, " ");
 			}
@@ -109,7 +102,7 @@ int main()
 	}
 	
 	FILE* outputFilePtr;
-	int outputFileOpenError = fopen_s(&outputFilePtr, OUTPUT_HTML_DOC, "wt");
+	int outputFileOpenError = fopen_s(&outputFilePtr, "C:\\Users\\root\\Desktop\\labs\\testTextFiles\\lab11\\output.html", "wt");
 	if (outputFileOpenError)
 	{
 		printf("Could not open text file for writing output data! Error code %d\n", outputFileOpenError);
@@ -127,8 +120,7 @@ int main()
 	}
 	
 	fprintf(outputFilePtr, "\t</BODY>\n");
-	fprintf(outputFilePtr, "</HTML>\n");    
+	fprintf(outputFilePtr, "</HTML>\n");
 	fclose(outputFilePtr);
-
 
 }

@@ -17,7 +17,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab12Encryptor", "Lab12Decr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab12DecryptorAndDrawer", "Lab12DecryptorAndDrawer\Lab12DecryptorAndDrawer.vcxproj", "{32947294-FC9B-47F4-ABAB-D907042F1D57}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab13StringUtils", "Lab13StringUtils\Lab13StringUtils.vcxproj", "{3B6EC7E0-CBA8-4477-BA48-297F30E0D9A6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.31.30818\lib\ARM64;;C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.31.30818\atlmfc\lib\ARM64;;;C:\Program Files (x86)\Windows Kits\10\lib\10.0.19041.0\ucrt\arm64;;", "Lab13StringUtils\Lab13StringUtils.vcxproj", "{3B6EC7E0-CBA8-4477-BA48-297F30E0D9A6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lab2", "Lab2\WinApiLab2Howemork.vcxproj", "{1D703377-9DF8-473A-9530-B8D00F4A6E03}"
 EndProject
