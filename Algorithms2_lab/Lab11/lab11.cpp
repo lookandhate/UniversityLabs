@@ -82,10 +82,13 @@ int main()
 		strcpy(newString, "\0");
 		strcpy(copyOfCurrentString, buffer[i]);
 
+		// Dividing a line on tokens with space symbol as a delimiter
 		char* token = strtok(copyOfCurrentString, " ");
 		while (token != NULL)
 		{
 			printf("\t token = %s;\n", token);
+			// So, if we have "A" in the word, we should replace whole world with NOP
+
 			if (isAInString(token))
 			{
 				printf("\t there is a A in the string, replacing it's with a NOP\n\n");
@@ -98,15 +101,20 @@ int main()
 				strcat(newString, token);
 				strcat(newString, " ");
 			}
+			// Go to the next token
 			token = strtok(NULL, " ");
 		}
 
+		// Parsed whole line by tokens and replaced words with "A" on NOP
+		// Rewriting string in buffer to updated one
 		strcpy(buffer[i], newString);
 		// Removes /n from the end of string(buffer[i])
 		buffer[i][strcspn(buffer[i], "\n")] = 0;
 	}
 
+	// Writing data to the output .html file
 	FILE* outputFilePtr;
+	printf("[DEBUG]: Creating output file: ");
 	int outputFileOpenError = fopen_s(&outputFilePtr, OUTPUT_HTML_DOC, "wt");
 	if (outputFileOpenError)
 	{
@@ -114,18 +122,24 @@ int main()
 		exit(0x1337);
 		// TODO: handle file openning error
 	}
+	printf("%d error code", outputFileOpenError);
 
+	// hard-coding head, title, and body beginning
 	fprintf(outputFilePtr, "<HTML>\n\t<HEAD>\n\t\t<TITLE>%s</TITLE>\n\t</HEAD>\n", buffer[0]);
 	fprintf(outputFilePtr, "\t<BODY>\n");
 	fprintf(outputFilePtr, "\t\t<H1>%s</H1>\n", buffer[0]);
 
+	// Writing data line by line in the output .html file
 	for (size_t i = 1; i < bufferTrueSize; i++)
 	{
 		fprintf(outputFilePtr, "\t\t%s <BR>\n", buffer[i]);
 	}
 
+	// Writing closing body and html tags
 	fprintf(outputFilePtr, "\t</BODY>\n");
 	fprintf(outputFilePtr, "</HTML>\n");
+
+	// Closing output file
 	fclose(outputFilePtr);
 
 
